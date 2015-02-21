@@ -6,7 +6,7 @@ module AttacheClient
     ATTACHE_DOWNLOAD_URL = ENV.fetch('ATTACHE_DOWNLOAD_URL') { 'http://localhost:9292/view' }
 
     def attache_urls(json, geometry)
-      array = json.kind_of?(Array) ? json : [json]
+      array = json.kind_of?(Array) ? json : [*json]
       array.collect do |path|
         download_url = ATTACHE_DOWNLOAD_URL
         prefix, basename = File.split(path)

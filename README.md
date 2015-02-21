@@ -82,6 +82,32 @@ Or if you're expecting multiple files uploaded, simply add `multiple: true`
 
 NOTE: `64x64#` is just an example, you should define a suitable [geometry](http://www.imagemagick.org/Usage/resize/) for your form
 
+### Strong Parameters
+
+You'd need to permit the new field in your controller. For example, a strong parameters definition may look like this in your `Users` controller
+
+``` ruby
+def user_params
+  params.require(:user).permit(:name)
+end
+```
+
+If you're only accepting a single file upload, change it to
+
+``` ruby
+def user_params
+  params.require(:user).permit(:name, :photo_path)
+end
+```
+
+If you're accepting multiple file uploads via `multiple: true`, change it to
+
+``` ruby
+def user_params
+  params.require(:user).permit(:name, photo_path: [])
+end
+```
+
 ### Show
 
 Use the `attache_urls` helper to obtain full urls for the values you've captured in your database.
