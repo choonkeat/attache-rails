@@ -2,6 +2,8 @@
 
 Ruby on Rails integration for [attache server](https://github.com/choonkeat/attache)
 
+NOTE: You can learn how to use this gem by looking at the [changes made to our example app](https://github.com/choonkeat/attache-railsapp/commit/16cb1274dcce5be01b6c9d42ad60c30c106ad7f9) or follow the step by step instructions in this `README`
+
 ## Dependencies
 
 [React](https://github.com/reactjs/react-rails), jQuery, Bootstrap 3
