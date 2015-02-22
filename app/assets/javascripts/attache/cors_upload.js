@@ -63,11 +63,11 @@ var CORSUpload = (function() {
         if (xhr.status === 200) {
           this_s3upload.onComplete(file.uid, JSON.parse(e.target.responseText));
         } else {
-          return this_s3upload.onError(file.uid, 'Upload error: ' + xhr.status);
+          return this_s3upload.onError(file.uid, xhr.status + ' ' + xhr.statusText);
         }
       };
       xhr.onerror = function() {
-        return this_s3upload.onError(file.uid, 'XHR error.');
+        return this_s3upload.onError(file.uid, 'Unable to reach server');
       };
       xhr.upload.onprogress = function(e) {
         var percentLoaded;

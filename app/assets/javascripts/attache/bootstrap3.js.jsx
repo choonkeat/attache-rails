@@ -23,9 +23,10 @@ var AttacheFileInput = React.createClass({
     this.state.files = {};
     this.setState(this.state);
     // upload the file via CORS
+    var that = this;
     new CORSUpload({
       file_element: file_element, onComplete: this.setFileValue, onProgress: this.setFileValue,
-      onError: function(uid, status) { alert(status); }
+      onError: function(uid, status) { that.setFileValue(uid, { pctString: '90%', pctDesc: status, className: 'progress-bar progress-bar-danger' }); }
     });
     // we don't want the file binary to be uploaded in the main form
     file_element.value = '';
@@ -73,13 +74,13 @@ var AttacheFilePreview = React.createClass({
   },
 
   render: function() {
-    var className = "progress-bar progress-bar-striped active" + (this.props.src ? " progress-bar-success" : "");
-    var pctString = (this.props.src ? 100 : this.props.percentLoaded) + "%";
-    var pctDesc   = (this.props.src ? 'Loading...' : pctString);
+    var className = this.props.className || "progress-bar progress-bar-striped active" + (this.props.src ? " progress-bar-success" : "");
+    var pctString = this.props.pctString || (this.props.src ? 100 : this.props.percentLoaded) + "%";
+    var pctDesc   = this.props.pctDesc   || (this.props.src ? 'Loading...' : pctString);
     var img       = (this.props.src ? (<img src={this.props.src} onLoad={this.removeProgressBar} />) : '');
     var pctStyle  = { width: pctString, minWidth: '3em' };
     var cptStyle  = { textOverflow: "ellipsis" };
-    var caption   = <div className="pull-left" style={cptStyle}>{this.props.filename || this.props.path.split('/').pop()}</div>;
+    var caption   = <div className="pull-left" style={cptStyle}>{this.props.filename || this.props.path && this.props.path.split('/').pop()}</div>;
 
     if (this.state.srcWas != this.props.src) {
       var progress = (
