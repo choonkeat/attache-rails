@@ -125,6 +125,20 @@ Alternatively, you can get the list of urls and manipulate it however you want
 = image_tag attache_urls(@user.photo_path, '128x128#').sample
 ```
 
+### Environment configs
+
+`ATTACHE_UPLOAD_URL` points to the attache server upload url. e.g. `http://localhost:9292/upload`
+
+`ATTACHE_DOWNLOAD_URL` points to url prefix for downloading the resized images, e.g. `http://cdn.lvh.me:9292/view`
+
+`ATTACHE_UPLOAD_DURATION` refers to the number of seconds before a signed upload request is considered expired, e.g. `600`
+
+`ATTACHE_SECRET_KEY` is the shared secret with the `attache` server. e.g. `t0psecr3t`
+
+* If this variable is not set, then upload requests will not be signed & `ATTACHE_UPLOAD_DURATION` will be ignored
+* If this variable is set, it must be the same value as `SECRET_KEY` is set on the `attache` server
+
+
 # License
 
 MIT

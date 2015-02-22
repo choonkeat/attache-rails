@@ -14,8 +14,17 @@ var CORSUpload = (function() {
   }
 
   CORSUpload.prototype.handleFileSelect = function(file_element) {
-    var f, files, output, _i, _len, _results, url;
-    url = $(file_element).data('uploadurl');
+    var f, files, output, _i, _len, _results, url, $ele;
+    $ele = $(file_element);
+    url = $ele.data('uploadurl');
+    if ($ele.data('hmac')) {
+      url = url +
+            "?hmac=" + encodeURIComponent($ele.data('hmac')) +
+            "&uuid=" + encodeURIComponent($ele.data('uuid')) +
+            "&expiration=" + encodeURIComponent($ele.data('expiration')) +
+            ""
+    }
+
     files = file_element.files;
     output = [];
     _results = [];
@@ -45,7 +54,8 @@ var CORSUpload = (function() {
   CORSUpload.prototype.performUpload = function(file, url) {
     var this_s3upload, xhr;
     this_s3upload = this;
-    xhr = this.createCORSRequest('PUT', url + (url.indexOf('?') == -1 ? '?' : '&') + 'file=' + encodeURIComponent(file.name));
+    url = url + (url.indexOf('?') == -1 ? '?' : '&') + 'file=' + encodeURIComponent(file.name);
+    xhr = this.createCORSRequest('PUT', url);
     if (!xhr) {
       this.onError(file.uid, 'CORS not supported');
     } else {
