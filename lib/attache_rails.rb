@@ -1,6 +1,6 @@
-require "attache_client/engine"
+require "attache_rails/engine"
 
-module AttacheClient
+module AttacheRails
   module ViewHelper
     ATTACHE_UPLOAD_URL   = ENV.fetch('ATTACHE_UPLOAD_URL')   { 'http://localhost:9292/upload' }
     ATTACHE_DOWNLOAD_URL = ENV.fetch('ATTACHE_DOWNLOAD_URL') { 'http://localhost:9292/view' }
@@ -40,4 +40,4 @@ module AttacheClient
   end
 end
 
-ActionView::Base.send(:include, AttacheClient::ViewHelper)
+ActionView::Base.send(:include, AttacheRails::ViewHelper)

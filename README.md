@@ -1,4 +1,4 @@
-# attache_client
+# attache_rails
 
 Ruby on Rails integration for [attache server](https://github.com/choonkeat/attache)
 
@@ -10,16 +10,16 @@ NOTE: You can learn how to use this gem by looking at the [changes made to our e
 
 ## Installation
 
-Install the attache_client package from Rubygems:
+Install the attache_rails package from Rubygems:
 
 ``` bash
-gem install attache_client
+gem install attache_rails
 ```
 
 Or add this to your `Gemfile`
 
 ``` ruby
-gem "attache_client"
+gem "attache_rails"
 ```
 
 Add the attache javascript to your `application.js`
