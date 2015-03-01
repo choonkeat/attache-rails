@@ -2,18 +2,18 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
 
   getInitialState: function() {
     var files = {};
-    var array = ([].concat(JSON.parse(this.props['data-value'])));
-    $.each(array, function(uid, json) {
+    if (this.props['data-value']) $.each(JSON.parse(this.props['data-value']), function(uid, json) {
       if (json) files[uid] = { path: json };
     });
     return {files: files};
   },
 
   onRemove: function(uid, e) {
-    delete this.state.files[uid];
-    this.setState(this.state);
     e.preventDefault();
     e.stopPropagation();
+
+    delete this.state.files[uid];
+    this.setState(this.state);
   },
 
   onChange: function() {
@@ -45,6 +45,7 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
 
   render: function() {
     var that = this;
+
     var previews = [];
     $.each(that.state.files, function(key, result) {
       var json = JSON.stringify(result);
@@ -61,10 +62,19 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
         )
       );
     });
+
+    var placeholders = [];
+    if (previews.length == 0 && this.props['data-placeholder']) $.each(JSON.parse(this.props['data-placeholder']), function(uid, src) {
+      placeholders.push(
+        React.createElement(AttachePlaceholder, {src: src})
+      );
+    });
+
     return (
       React.createElement("label", {htmlFor: this.props.id, className: "attache-file-selector"}, 
         React.createElement("input", React.__spread({type: "file"},  this.props, {onChange: this.onChange})), 
-        previews
+        previews, 
+        placeholders
       )
     );
   }

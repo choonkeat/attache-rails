@@ -17,7 +17,7 @@ module AttacheRails
       end
     end
 
-    def attache_options(geometry, current_value)
+    def attache_options(geometry, current_value, placeholder = nil, data_attrs = nil)
       auth = if ENV['ATTACHE_SECRET_KEY']
         uuid = SecureRandom.uuid
         expiration = (Time.now + ATTACHE_UPLOAD_DURATION).to_i
@@ -32,9 +32,10 @@ module AttacheRails
         data: {
           geometry: geometry,
           value: [*current_value],
+          placeholder: [*placeholder],
           uploadurl: ATTACHE_UPLOAD_URL,
           downloadurl: ATTACHE_DOWNLOAD_URL,
-        }.merge(auth),
+        }.merge(data_attrs || {}).merge(auth),
       }
     end
   end
