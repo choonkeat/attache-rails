@@ -37,7 +37,7 @@ if (typeof AttacheFilePreview === 'undefined') {
           {progress}
           {img}
           <div className="clearfix">
-            <div className="pull-left" style="textOverflow: 'ellipsis;'">{this.props.filename}</div>
+            <div className="pull-left">{this.props.filename}</div>
             <a href="#remove" className="pull-right" onClick={this.props.onRemove} title="Click to remove">&times;</a>
           </div>
         </div>

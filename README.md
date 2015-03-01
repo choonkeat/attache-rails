@@ -28,15 +28,6 @@ Add the attache javascript to your `application.js`
 //= require attache
 ```
 
-Or you can include the various scripts yourself
-
-``` javascript
-//= require attache/cors_upload
-//= require attache/file_input
-//= require attache/bootstrap3
-//= require attache/ujs
-```
-
 If you want to customize the file upload look and feel, define your own react `<AttacheFilePreview/>` renderer *before* including the attache js. For example,
 
 ``` javascript
@@ -128,10 +119,17 @@ Use the `attache_urls` helper to obtain full urls for the values you've captured
   = image_tag(url)
 ```
 
-Alternatively, you can get the list of urls and manipulate it however you want
+You can also include `AttacheRails::Helper` directly in your model
 
-``` slim
-= image_tag attache_urls(@user.photo_path, '128x128#').sample
+``` ruby
+class User < ActiveRecord::Base
+  include AttacheRails::Helper
+  serialize :photo_path, JSON
+
+  def photo_url
+    attache_urls(photo_path, '128x128#').sample
+  end
+end
 ```
 
 ### Environment configs

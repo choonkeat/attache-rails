@@ -1,7 +1,7 @@
 require "attache_rails/engine"
 
 module AttacheRails
-  module ViewHelper
+  module Helper
     ATTACHE_UPLOAD_URL   = ENV.fetch('ATTACHE_UPLOAD_URL')   { 'http://localhost:9292/upload' }
     ATTACHE_DOWNLOAD_URL = ENV.fetch('ATTACHE_DOWNLOAD_URL') { 'http://localhost:9292/view' }
     ATTACHE_UPLOAD_DURATION = ENV.fetch('ATTACHE_UPLOAD_DURATION') { '600' }.to_i # 10 minutes
@@ -40,4 +40,4 @@ module AttacheRails
   end
 end
 
-ActionView::Base.send(:include, AttacheRails::ViewHelper)
+ActionView::Base.send(:include, AttacheRails::Helper)

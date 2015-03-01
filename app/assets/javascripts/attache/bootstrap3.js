@@ -37,7 +37,7 @@ if (typeof AttacheFilePreview === 'undefined') {
           progress, 
           img, 
           React.createElement("div", {className: "clearfix"}, 
-            React.createElement("div", {className: "pull-left", style: "textOverflow: 'ellipsis;'"}, this.props.filename), 
+            React.createElement("div", {className: "pull-left"}, this.props.filename), 
             React.createElement("a", {href: "#remove", className: "pull-right", onClick: this.props.onRemove, title: "Click to remove"}, "×")
           )
         )
