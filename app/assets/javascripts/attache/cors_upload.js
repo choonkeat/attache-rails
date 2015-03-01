@@ -1,11 +1,11 @@
-var CORSUpload = (function() {
+var AttacheCORSUpload = (function() {
   var counter = 0;
 
-  CORSUpload.prototype.onComplete = function(uid, json) { };
-  CORSUpload.prototype.onProgress = function(uid, json) { };
-  CORSUpload.prototype.onError = function(uid, status) { alert(status); };
+  AttacheCORSUpload.prototype.onComplete = function(uid, json) { };
+  AttacheCORSUpload.prototype.onProgress = function(uid, json) { };
+  AttacheCORSUpload.prototype.onError = function(uid, status) { alert(status); };
 
-  function CORSUpload(options) {
+  function AttacheCORSUpload(options) {
     if (options == null) options = {};
     for (option in options) {
       this[option] = options[option];
@@ -13,7 +13,7 @@ var CORSUpload = (function() {
     this.handleFileSelect(options.file_element);
   }
 
-  CORSUpload.prototype.handleFileSelect = function(file_element) {
+  AttacheCORSUpload.prototype.handleFileSelect = function(file_element) {
     var f, files, output, _i, _len, _results, url, $ele;
     $ele = $(file_element);
     url = $ele.data('uploadurl');
@@ -37,7 +37,7 @@ var CORSUpload = (function() {
     return _results;
   };
 
-  CORSUpload.prototype.createCORSRequest = function(method, url) {
+  AttacheCORSUpload.prototype.createCORSRequest = function(method, url) {
     var xhr;
     xhr = new XMLHttpRequest();
     if (xhr.withCredentials != null) {
@@ -51,7 +51,7 @@ var CORSUpload = (function() {
     return xhr;
   };
 
-  CORSUpload.prototype.performUpload = function(file, url) {
+  AttacheCORSUpload.prototype.performUpload = function(file, url) {
     var this_s3upload, xhr;
     this_s3upload = this;
     url = url + (url.indexOf('?') == -1 ? '?' : '&') + 'file=' + encodeURIComponent(file.name);
@@ -80,6 +80,6 @@ var CORSUpload = (function() {
     return xhr.send(file);
   };
 
-  return CORSUpload;
+  return AttacheCORSUpload;
 
 })();

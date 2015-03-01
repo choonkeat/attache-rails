@@ -32,9 +32,18 @@ Or you can include the various scripts yourself
 
 ``` javascript
 //= require attache/cors_upload
+//= require attache/file_input
 //= require attache/bootstrap3
 //= require attache/ujs
 ```
+
+If you want to customize the file upload look and feel, define your own react `<AttacheFilePreview/>` renderer *before* including the attache js. For example,
+
+``` javascript
+//= require ./my_attache_file_preview.js
+//= require attache
+```
+
 
 ## Usage
 
@@ -137,7 +146,6 @@ Alternatively, you can get the list of urls and manipulate it however you want
 
 * If this variable is not set, then upload requests will not be signed & `ATTACHE_UPLOAD_DURATION` will be ignored
 * If this variable is set, it must be the same value as `SECRET_KEY` is set on the `attache` server
-
 
 # License
 
