@@ -60,3 +60,15 @@ if (typeof AttachePlaceholder === 'undefined') {
   });
 
 }
+
+if (typeof AttacheHeader === 'undefined') {
+
+  var AttacheHeader = React.createClass({displayName: "AttacheHeader",
+    render: function() {
+      return (
+        React.createElement("noscript", null)
+      );
+    }
+  });
+
+}

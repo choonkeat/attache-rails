@@ -20,7 +20,8 @@ var AttacheFileInput = React.createClass({
     var file_element = this.getDOMNode().firstChild;
     // user cancelled file chooser dialog. ignore
     if (file_element.files.length == 0) return;
-    this.state.files = {};
+    if (! this.props.multiple) this.state.files = {};
+
     this.setState(this.state);
     // upload the file via CORS
     var that = this;
@@ -54,6 +55,7 @@ var AttacheFileInput = React.createClass({
         parts.splice(parts.length-1, 0, encodeURIComponent(that.props['data-geometry'] || '128x128#'));
         result.src = that.props['data-downloadurl'] + '/' + parts.join('/');
         result.filename = result.src.split('/').pop().split(/[#?]/).shift();
+        result.multiple = that.props.multiple;
       }
       previews.push(
         <div className="attache-file-input">
@@ -64,15 +66,17 @@ var AttacheFileInput = React.createClass({
     });
 
     var placeholders = [];
-    if (previews.length == 0 && this.props['data-placeholder']) $.each(JSON.parse(this.props['data-placeholder']), function(uid, src) {
+    if (previews.length == 0 && that.props['data-placeholder']) $.each(JSON.parse(that.props['data-placeholder']), function(uid, src) {
       placeholders.push(
-        <AttachePlaceholder src={src} />
+        <AttachePlaceholder  {...that.props} src={src} />
       );
     });
 
+    var className = ["attache-file-selector", "attache-placeholders-count-" + placeholders.length, "attache-previews-count-" + previews.length, this.props['data-classname']].join(' ').trim();
     return (
-      <label htmlFor={this.props.id} className="attache-file-selector">
-        <input type="file" {...this.props} onChange={this.onChange}/>
+      <label htmlFor={that.props.id} className={className}>
+        <input type="file" {...that.props} onChange={this.onChange}/>
+        <AttacheHeader {...that.props} />
         {previews}
         {placeholders}
       </label>

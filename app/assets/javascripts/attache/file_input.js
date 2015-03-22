@@ -20,7 +20,8 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
     var file_element = this.getDOMNode().firstChild;
     // user cancelled file chooser dialog. ignore
     if (file_element.files.length == 0) return;
-    this.state.files = {};
+    if (! this.props.multiple) this.state.files = {};
+
     this.setState(this.state);
     // upload the file via CORS
     var that = this;
@@ -54,6 +55,7 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
         parts.splice(parts.length-1, 0, encodeURIComponent(that.props['data-geometry'] || '128x128#'));
         result.src = that.props['data-downloadurl'] + '/' + parts.join('/');
         result.filename = result.src.split('/').pop().split(/[#?]/).shift();
+        result.multiple = that.props.multiple;
       }
       previews.push(
         React.createElement("div", {className: "attache-file-input"}, 
@@ -64,15 +66,17 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
     });
 
     var placeholders = [];
-    if (previews.length == 0 && this.props['data-placeholder']) $.each(JSON.parse(this.props['data-placeholder']), function(uid, src) {
+    if (previews.length == 0 && that.props['data-placeholder']) $.each(JSON.parse(that.props['data-placeholder']), function(uid, src) {
       placeholders.push(
-        React.createElement(AttachePlaceholder, {src: src})
+        React.createElement(AttachePlaceholder, React.__spread({},   that.props, {src: src}))
       );
     });
 
+    var className = ["attache-file-selector", "attache-placeholders-count-" + placeholders.length, "attache-previews-count-" + previews.length, this.props['data-classname']].join(' ').trim();
     return (
-      React.createElement("label", {htmlFor: this.props.id, className: "attache-file-selector"}, 
-        React.createElement("input", React.__spread({type: "file"},  this.props, {onChange: this.onChange})), 
+      React.createElement("label", {htmlFor: that.props.id, className: className}, 
+        React.createElement("input", React.__spread({type: "file"},  that.props, {onChange: this.onChange})), 
+        React.createElement(AttacheHeader, React.__spread({},  that.props)), 
         previews, 
         placeholders
       )
