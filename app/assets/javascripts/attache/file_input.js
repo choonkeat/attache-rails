@@ -3,7 +3,7 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
   getInitialState: function() {
     var files = {};
     if (this.props['data-value']) $.each(JSON.parse(this.props['data-value']), function(uid, json) {
-      if (json) files[uid] = { path: json };
+      if (json) files[uid] = json;
     });
     return {files: files};
   },
@@ -47,9 +47,12 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
   render: function() {
     var that = this;
 
+    var Header = eval(this.props['data-header-component'] || 'AttacheHeader');
+    var Preview = eval(this.props['data-preview-component'] || 'AttacheFilePreview');
+    var Placeholder = eval(this.props['data-placeholder-component'] || 'AttachePlaceholder');
+
     var previews = [];
     $.each(that.state.files, function(key, result) {
-      var json = JSON.stringify(result);
       if (result.path) {
         var parts = result.path.split('/');
         parts.splice(parts.length-1, 0, encodeURIComponent(that.props['data-geometry'] || '128x128#'));
@@ -57,10 +60,11 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
         result.filename = result.src.split('/').pop().split(/[#?]/).shift();
         result.multiple = that.props.multiple;
       }
+      var json = JSON.stringify(result);
       previews.push(
         React.createElement("div", {className: "attache-file-input"}, 
-          React.createElement("input", {type: "hidden", name: that.props.name, value: result.path, readOnly: "true"}), 
-          React.createElement(AttacheFilePreview, React.__spread({},  result, {key: key, onRemove: that.onRemove.bind(that, key)}))
+          React.createElement("input", {type: "hidden", name: that.props.name, value: json, readOnly: "true"}), 
+          React.createElement(Preview, React.__spread({},  result, {key: key, onRemove: that.onRemove.bind(that, key)}))
         )
       );
     });
@@ -68,7 +72,7 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
     var placeholders = [];
     if (previews.length == 0 && that.props['data-placeholder']) $.each(JSON.parse(that.props['data-placeholder']), function(uid, src) {
       placeholders.push(
-        React.createElement(AttachePlaceholder, React.__spread({},   that.props, {src: src}))
+        React.createElement(Placeholder, React.__spread({},   that.props, {src: src}))
       );
     });
 
@@ -76,7 +80,8 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
     return (
       React.createElement("label", {htmlFor: that.props.id, className: className}, 
         React.createElement("input", React.__spread({type: "file"},  that.props, {onChange: this.onChange})), 
-        React.createElement(AttacheHeader, React.__spread({},  that.props)), 
+        React.createElement("input", {type: "hidden", name: that.props.name, value: ""}), 
+        React.createElement(Header, React.__spread({},  that.props)), 
         previews, 
         placeholders
       )

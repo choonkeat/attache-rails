@@ -3,7 +3,7 @@ var AttacheFileInput = React.createClass({
   getInitialState: function() {
     var files = {};
     if (this.props['data-value']) $.each(JSON.parse(this.props['data-value']), function(uid, json) {
-      if (json) files[uid] = { path: json };
+      if (json) files[uid] = json;
     });
     return {files: files};
   },
@@ -47,9 +47,12 @@ var AttacheFileInput = React.createClass({
   render: function() {
     var that = this;
 
+    var Header = eval(this.props['data-header-component'] || 'AttacheHeader');
+    var Preview = eval(this.props['data-preview-component'] || 'AttacheFilePreview');
+    var Placeholder = eval(this.props['data-placeholder-component'] || 'AttachePlaceholder');
+
     var previews = [];
     $.each(that.state.files, function(key, result) {
-      var json = JSON.stringify(result);
       if (result.path) {
         var parts = result.path.split('/');
         parts.splice(parts.length-1, 0, encodeURIComponent(that.props['data-geometry'] || '128x128#'));
@@ -57,10 +60,11 @@ var AttacheFileInput = React.createClass({
         result.filename = result.src.split('/').pop().split(/[#?]/).shift();
         result.multiple = that.props.multiple;
       }
+      var json = JSON.stringify(result);
       previews.push(
         <div className="attache-file-input">
-          <input type="hidden" name={that.props.name} value={result.path} readOnly="true" />
-          <AttacheFilePreview {...result} key={key} onRemove={that.onRemove.bind(that, key)}/>
+          <input type="hidden" name={that.props.name} value={json} readOnly="true" />
+          <Preview {...result} key={key} onRemove={that.onRemove.bind(that, key)}/>
         </div>
       );
     });
@@ -68,7 +72,7 @@ var AttacheFileInput = React.createClass({
     var placeholders = [];
     if (previews.length == 0 && that.props['data-placeholder']) $.each(JSON.parse(that.props['data-placeholder']), function(uid, src) {
       placeholders.push(
-        <AttachePlaceholder  {...that.props} src={src} />
+        <Placeholder  {...that.props} src={src} />
       );
     });
 
@@ -76,7 +80,8 @@ var AttacheFileInput = React.createClass({
     return (
       <label htmlFor={that.props.id} className={className}>
         <input type="file" {...that.props} onChange={this.onChange}/>
-        <AttacheHeader {...that.props} />
+        <input type="hidden" name={that.props.name} value="" />
+        <Header {...that.props} />
         {previews}
         {placeholders}
       </label>
