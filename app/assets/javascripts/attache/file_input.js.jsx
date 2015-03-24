@@ -5,14 +5,19 @@ var AttacheFileInput = React.createClass({
     if (this.props['data-value']) $.each(JSON.parse(this.props['data-value']), function(uid, json) {
       if (json) files[uid] = json;
     });
-    return {files: files};
+    return {files: files, attaches_discarded: []};
   },
 
   onRemove: function(uid, e) {
     e.preventDefault();
     e.stopPropagation();
 
+    var fieldname = this.getDOMNode().firstChild.name;                           // when   'user[avatar]'
+    var newfield  = fieldname.replace(/\w+\](\[\]|)$/, 'attaches_discarded][]'); // become 'user[attaches_discarded][]'
+
+    this.state.attaches_discarded.push({ fieldname: newfield, path: this.state.files[uid].path });
     delete this.state.files[uid];
+
     this.setState(this.state);
   },
 
@@ -76,6 +81,13 @@ var AttacheFileInput = React.createClass({
       );
     });
 
+    var discards = [];
+    $.each(that.state.attaches_discarded, function(index, discard) {
+      discards.push(
+        <input type="hidden" name={discard.fieldname} value={discard.path} />
+      );
+    });
+
     var className = ["attache-file-selector", "attache-placeholders-count-" + placeholders.length, "attache-previews-count-" + previews.length, this.props['data-classname']].join(' ').trim();
     return (
       <label htmlFor={that.props.id} className={className}>
@@ -84,6 +96,7 @@ var AttacheFileInput = React.createClass({
         <Header {...that.props} />
         {previews}
         {placeholders}
+        {discards}
       </label>
     );
   }

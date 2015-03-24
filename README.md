@@ -87,7 +87,7 @@ If you're only accepting a single file upload, change it to
 
 ``` ruby
 def user_params
-  params.require(:user).permit(:name, :photo)
+  params.require(:user).permit(:name, :photo, attaches_discarded: [])
 end
 ```
 
@@ -95,9 +95,11 @@ If you're accepting multiple file uploads, change it to
 
 ``` ruby
 def user_params
-  params.require(:user).permit(:name, photos: [])
+  params.require(:user).permit(:name, photos: [], attaches_discarded: [])
 end
 ```
+
+NOTE: You do not have to manage `params[:attaches_discarded]` yourself. It is automatically managed for you between the frontend javascript and the ActiveRecord integration: files that are discarded will be removed from the attache server when you update or destroy your model.
 
 ### Show
 
@@ -116,9 +118,7 @@ or
 
 ### Environment configs
 
-`ATTACHE_UPLOAD_URL` points to the attache server upload url. e.g. `http://localhost:9292/upload`
-
-`ATTACHE_DOWNLOAD_URL` points to url prefix for downloading the resized images, e.g. `http://cdn.lvh.me:9292/view`
+`ATTACHE_URL` points to the attache server. e.g. `http://localhost:9292`
 
 `ATTACHE_UPLOAD_DURATION` refers to the number of seconds before a signed upload request is considered expired, e.g. `600`
 
