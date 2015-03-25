@@ -2,8 +2,6 @@
 
 Ruby on Rails integration for [attache server](https://github.com/choonkeat/attache)
 
-NOTE: You can learn how to use this gem by looking at the [changes made to our example app](https://github.com/choonkeat/attache-railsapp/compare/fc47c17...master) or follow the step by step instructions in this `README`
-
 ## Dependencies
 
 [React](https://github.com/reactjs/react-rails), jQuery, Bootstrap 3
@@ -40,47 +38,38 @@ If you want to customize the file upload look and feel, define your own react `<
 
 ### Database
 
-To use `attache`, you only need to store the `path`, given to you after you've uploaded a file. So if you have an existing model, you only need to add a string, varchar or text field
+To use `attache`, you only need to store the JSON attributes given to you after you've uploaded a file. So if you have an existing model, you only need to add a text column
 
 ``` bash
-rails generate migration AddPhotoPathToUsers photo_path:string
+rails generate migration AddPhotoPathToUsers photo:text
 ```
 
-To assign **multiple** images to **one** model, you'd only need one text field
+To assign **multiple** images to **one** model, the same column can be used, although pluralized column name reads better
 
 ``` bash
-rails generate migration AddPhotoPathToUsers photo_path:text
+rails generate migration AddPhotoPathToUsers photos:text
 ```
 
 ### Model
 
-In your model, `serialize` the column
+In your model, define whether it `has_one_attache` or `has_many_attaches`
 
 ``` ruby
 class User < ActiveRecord::Base
-  serialize :photo_path, JSON
+  has_many_attaches :photos
 end
 ```
 
 ### New or Edit form
 
-In your form, you would add some options to `file_field` using the `attache_options` helper method. For example, a regular file field may look like this:
+In your form, you would add some options to `file_field` using the `attache_options` helper method:
 
 ``` slim
-= f.file_field :photo_path
+= f.file_field :photos, f.object.avatar_options('64x64#')
 ```
 
-Change it to
+If you were using `has_many_attaches` the file input will automatically allow multiple files, otherwise the file input will only accept 1 file.
 
-``` slim
-= f.file_field :photo_path, **attache_options('64x64#', f.object.photo_path)
-```
-
-Or if you're expecting multiple files uploaded, simply add `multiple: true`
-
-``` slim
-= f.file_field :photo_path, multiple: true, **attache_options('64x64#', f.object.photo_path)
-```
 
 NOTE: `64x64#` is just an example, you should define a suitable [geometry](http://www.imagemagick.org/Usage/resize/) for your form
 
@@ -98,45 +87,38 @@ If you're only accepting a single file upload, change it to
 
 ``` ruby
 def user_params
-  params.require(:user).permit(:name, :photo_path)
+  params.require(:user).permit(:name, :photo, attaches_discarded: [])
 end
 ```
 
-If you're accepting multiple file uploads via `multiple: true`, change it to
+If you're accepting multiple file uploads, change it to
 
 ``` ruby
 def user_params
-  params.require(:user).permit(:name, photo_path: [])
+  params.require(:user).permit(:name, photos: [], attaches_discarded: [])
 end
 ```
+
+NOTE: You do not have to manage `params[:attaches_discarded]` yourself. It is automatically managed for you between the frontend javascript and the ActiveRecord integration: files that are discarded will be removed from the attache server when you update or destroy your model.
 
 ### Show
 
-Use the `attache_urls` helper to obtain full urls for the values you've captured in your database.
+Use the `*_url` or `*_urls` methods (depending on whether you are accepting multiple files) to obtain full urls.
 
 ``` slim
-- attache_urls(@user.photo_path, '128x128#') do |url|
-  = image_tag(url)
+= image_tag @user.photo_url('100x100#')
 ```
 
-You can also include `AttacheRails::Helper` directly in your model
+or
 
-``` ruby
-class User < ActiveRecord::Base
-  include AttacheRails::Helper
-  serialize :photo_path, JSON
-
-  def photo_url
-    attache_urls(photo_path, '128x128#').sample
-  end
-end
+``` slim
+- @user.photos_urls('200x200#').each do |url|
+  = image_tag url
 ```
 
 ### Environment configs
 
-`ATTACHE_UPLOAD_URL` points to the attache server upload url. e.g. `http://localhost:9292/upload`
-
-`ATTACHE_DOWNLOAD_URL` points to url prefix for downloading the resized images, e.g. `http://cdn.lvh.me:9292/view`
+`ATTACHE_URL` points to the attache server. e.g. `http://localhost:9292`
 
 `ATTACHE_UPLOAD_DURATION` refers to the number of seconds before a signed upload request is considered expired, e.g. `600`
 

@@ -14,7 +14,7 @@ var AttacheCORSUpload = (function() {
   }
 
   AttacheCORSUpload.prototype.handleFileSelect = function(file_element) {
-    var f, files, output, _i, _len, _results, url, $ele;
+    var f, files, output, _i, _len, _results, url, $ele, prefix;
     $ele = $(file_element);
     url = $ele.data('uploadurl');
     if ($ele.data('hmac')) {
@@ -25,12 +25,13 @@ var AttacheCORSUpload = (function() {
             ""
     }
 
+    prefix = Date.now() + "_";
     files = file_element.files;
     output = [];
     _results = [];
     for (_i = 0, _len = files.length; _i < _len; _i++) {
       f = files[_i];
-      f.uid = counter++;
+      f.uid = prefix + (counter++);
       this.onProgress(f.uid, { filename: f.name, percentLoaded: 0, bytesLoaded: 0, bytesTotal: f.size });
       _results.push(this.performUpload(f, url));
     }

@@ -46,3 +46,29 @@ if (typeof AttacheFilePreview === 'undefined') {
   });
 
 }
+
+if (typeof AttachePlaceholder === 'undefined') {
+
+  var AttachePlaceholder = React.createClass({displayName: "AttachePlaceholder",
+    render: function() {
+      return (
+        React.createElement("div", {className: "attache-file-preview"}, 
+          React.createElement("img", {src: this.props.src})
+        )
+      );
+    }
+  });
+
+}
+
+if (typeof AttacheHeader === 'undefined') {
+
+  var AttacheHeader = React.createClass({displayName: "AttacheHeader",
+    render: function() {
+      return (
+        React.createElement("noscript", null)
+      );
+    }
+  });
+
+}

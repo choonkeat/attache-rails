@@ -46,3 +46,29 @@ if (typeof AttacheFilePreview === 'undefined') {
   });
 
 }
+
+if (typeof AttachePlaceholder === 'undefined') {
+
+  var AttachePlaceholder = React.createClass({
+    render: function() {
+      return (
+        <div className="attache-file-preview">
+          <img src={this.props.src} />
+        </div>
+      );
+    }
+  });
+
+}
+
+if (typeof AttacheHeader === 'undefined') {
+
+  var AttacheHeader = React.createClass({
+    render: function() {
+      return (
+        <noscript />
+      );
+    }
+  });
+
+}
