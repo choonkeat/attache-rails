@@ -24,7 +24,7 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
   onChange: function() {
     var file_element = this.getDOMNode().firstChild;
     // user cancelled file chooser dialog. ignore
-    if (file_element.files.length == 0) return;
+    if (! file_element || file_element.files.length == 0) return;
     if (! this.props.multiple) this.state.files = {};
 
     this.setState(this.state);
