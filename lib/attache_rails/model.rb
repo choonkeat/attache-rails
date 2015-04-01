@@ -5,12 +5,22 @@ require "httpclient"
 module AttacheRails
   module Utils
     class << self
+      def attache_retry_doing(max_retries, retries = 0)
+        yield
+      rescue Exception
+        if (retries += 1) <= max_retries
+          sleep retries
+          retry
+        end
+        raise
+      end
+
       def attache_upload_and_get_json(readable)
         uri = URI.parse(ATTACHE_UPLOAD_URL)
         uri.query = { file: (readable.try(:original_filename) || 'noname'), **attache_auth_options }.collect {|k,v|
           CGI.escape(k.to_s) + "=" + CGI.escape(v.to_s)
         }.join('&')
-        HTTPClient.post(uri, readable, {'Content-Type' => 'binary/octet-stream'}).body
+        attache_retry_doing(3) { HTTPClient.post(uri, readable, {'Content-Type' => 'binary/octet-stream'}).body }
       end
 
       def attache_url_for(json_string, geometry)
@@ -41,7 +51,7 @@ module AttacheRails
             placeholder: [*options[:placeholder]],
             uploadurl: ATTACHE_UPLOAD_URL,
             downloadurl: ATTACHE_DOWNLOAD_URL,
-          }.merge(options[:data_attrs] || {}).merge(attache_auth_options),
+          }.merge(options[:data] || {}).merge(attache_auth_options),
         }
       end
     end
@@ -90,7 +100,9 @@ module AttacheRails
         after_update "#{name}_discard_was"
         define_method "#{name}_discard",    -> do
           self.attaches_discarded ||= []
-          self.attaches_discarded.push(self.send("#{name}_attributes", 'original')['path'])
+          if attrs = self.send("#{name}_attributes", 'original')
+            self.attaches_discarded.push(attrs['path'])
+          end
         end
         after_destroy "#{name}_discard"
       end
@@ -109,7 +121,7 @@ module AttacheRails
           super(new_value)
         }
         define_method "#{name}_discard_was",-> do
-          new_value = self.send("#{name}")
+          new_value = [*self.send("#{name}")]
           old_value = [*self.send("#{name}_was")]
           obsoleted = old_value.collect {|x| JSON.parse(x)['path'] } - new_value.collect {|x| JSON.parse(x)['path'] }
           self.attaches_discarded ||= []
