@@ -65,6 +65,9 @@ module AttacheRails
           Utils.attache_auth_options.merge(paths: files.join("\n"))
         )
       end
+    rescue Exception
+      raise if ENV['ATTACHE_DISCARD_FAILURE_RAISE_ERROR']
+      logger.warn [$!, $@]
     end
 
     module ClassMethods
