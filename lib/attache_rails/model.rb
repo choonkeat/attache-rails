@@ -56,6 +56,8 @@ module AttacheRails
     end
 
     def attaches_discard!(files = attaches_discarded)
+      files.reject! &:blank?
+      files.uniq!
       if files.present?
         logger.info "DELETE #{files.inspect}"
         HTTPClient.post_content(
@@ -73,12 +75,16 @@ module AttacheRails
         define_method "#{name}_attributes", -> (geometry) {               str = self.send(name); Utils.attache_url_for(str, geometry) if str; }
         define_method "#{name}=",           -> (value)    {
           new_value = (value.respond_to?(:read) ? Utils.attache_upload_and_get_json(value) : value)
+          super(new_value)
+        }
+        define_method "#{name}_discard_was",-> do
+          new_value = self.send("#{name}")
           old_value = self.send("#{name}_was")
           obsoleted = [*old_value].collect {|x| JSON.parse(x)['path'] } - [*new_value].collect {|x| JSON.parse(x)['path'] }
           self.attaches_discarded ||= []
           self.attaches_discarded.push(*obsoleted)
-          super(new_value)
-        }
+        end
+        after_update "#{name}_discard_was"
         define_method "#{name}_discard",    -> do
           self.attaches_discarded ||= []
           self.attaches_discarded.push(self.send("#{name}_attributes", 'original')['path'])
@@ -97,12 +103,16 @@ module AttacheRails
         }
         define_method "#{name}=",           -> (array)    {
           new_value = ((array || []).reject(&:blank?).collect {|value| value.respond_to?(:read) ? Utils.attache_upload_and_get_json(value) : value })
+          super(new_value)
+        }
+        define_method "#{name}_discard_was",-> do
+          new_value = self.send("#{name}")
           old_value = [*self.send("#{name}_was")]
           obsoleted = old_value.collect {|x| JSON.parse(x)['path'] } - new_value.collect {|x| JSON.parse(x)['path'] }
           self.attaches_discarded ||= []
-          self.attaches_discarded.push(*obsoleted)
-          super(new_value)
-        }
+          obsoleted.each {|path| self.attaches_discarded.push(path) }
+        end
+        after_update "#{name}_discard_was"
         define_method "#{name}_discard",    -> do
           self.attaches_discarded ||= []
           self.send("#{name}_attributes", 'original').each {|attrs| self.attaches_discarded.push(attrs['path']) }
