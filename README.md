@@ -33,6 +33,12 @@ If you want to customize the file upload look and feel, define your own react `<
 //= require attache
 ```
 
+The `AttacheRails.upgrade_fileinputs` idempotent function is setup to find all the elements with `enable-attache` css class and upgrade them to use the direct upload & preview javascript. If you wish to re-run this function any other time, e.g. hookup the `cocoon:after-insert` event, you may
+
+``` javascript
+$(document).on('cocoon:after-insert', AttacheRails.upgrade_fileinputs);
+```
+
 
 ## Usage
 

@@ -1,5 +1,5 @@
-(function() {
-  function attacheFileInputs() {
+window.AttacheRails = {
+  upgrade_fileinputs: function() {
     var safeWords = { 'class': 'className', 'for': 'htmlFor' };
     var sel = document.getElementsByClassName('enable-attache');
     var ele, attrs, name, value;
@@ -18,6 +18,6 @@
       React.render(React.createElement(AttacheFileInput, React.__spread({},  attrs)), wrap);
     }
   }
+};
 
-  $(document).on('page:change', attacheFileInputs);
-})();
+$(document).on('page:change', AttacheRails.upgrade_fileinputs);
