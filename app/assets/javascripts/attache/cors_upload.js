@@ -5,16 +5,24 @@ var AttacheCORSUpload = (function() {
   AttacheCORSUpload.prototype.onProgress = function(uid, json) { };
   AttacheCORSUpload.prototype.onError = function(uid, status) { alert(status); };
 
+  function setupFilePreview(file) {
+    if (typeof FileReader == 'undefined') return;
+    var reader = new FileReader();
+    reader.onload = function (event) { file.src = event.target.result; };
+    reader.readAsDataURL(file);
+    return file;
+  }
+
   function AttacheCORSUpload(options) {
     if (options == null) options = {};
     for (option in options) {
       this[option] = options[option];
     }
-    this.handleFileSelect(options.file_element);
+    this.handleFileSelect(options.file_element, options.files);
   }
 
-  AttacheCORSUpload.prototype.handleFileSelect = function(file_element) {
-    var f, files, output, _i, _len, _results, url, $ele, prefix;
+  AttacheCORSUpload.prototype.handleFileSelect = function(file_element, files) {
+    var f, output, _i, _len, _results, url, $ele, prefix;
     $ele = $(file_element);
     url = $ele.data('uploadurl');
     if ($ele.data('hmac')) {
@@ -26,13 +34,12 @@ var AttacheCORSUpload = (function() {
     }
 
     prefix = Date.now() + "_";
-    files = file_element.files;
     output = [];
     _results = [];
     for (_i = 0, _len = files.length; _i < _len; _i++) {
-      f = files[_i];
+      f = setupFilePreview(files[_i]);
       f.uid = prefix + (counter++);
-      this.onProgress(f.uid, { filename: f.name, percentLoaded: 0, bytesLoaded: 0, bytesTotal: f.size });
+      this.onProgress(f.uid, { src: f.src, filename: f.name, percentLoaded: 0, bytesLoaded: 0, bytesTotal: f.size });
       _results.push(this.performUpload(f, url));
     }
     return _results;
@@ -74,7 +81,7 @@ var AttacheCORSUpload = (function() {
         var percentLoaded;
         if (e.lengthComputable) {
           percentLoaded = Math.round((e.loaded / e.total) * 100);
-          return this_s3upload.onProgress(file.uid, { filename: file.name, percentLoaded: percentLoaded, bytesLoaded: e.loaded, bytesTotal: e.total });
+          return this_s3upload.onProgress(file.uid, { src: file.src, filename: file.name, percentLoaded: percentLoaded, bytesLoaded: e.loaded, bytesTotal: e.total });
         }
       };
     }

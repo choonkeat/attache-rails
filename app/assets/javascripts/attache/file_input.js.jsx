@@ -21,17 +21,20 @@ var AttacheFileInput = React.createClass({
     this.setState(this.state);
   },
 
-  onChange: function() {
-    var file_element = this.getDOMNode().firstChild;
+  performUpload: function(file_element, files) {
     // user cancelled file chooser dialog. ignore
-    if (! file_element || file_element.files.length == 0) return;
-    if (! this.props.multiple) this.state.files = {};
+    if (! files || files.length == 0) return;
+    if (! this.props.multiple) {
+      this.state.files = {};
+      files = Array.prototype.splice.apply(files, [0, 1]); // array of 1 element
+    }
 
     this.setState(this.state);
     // upload the file via CORS
     var that = this;
     new AttacheCORSUpload({
       file_element: file_element,
+      files:        files,
       onComplete:   this.setFileValue,
       onProgress:   this.setFileValue,
       onError: function(uid, status) {
