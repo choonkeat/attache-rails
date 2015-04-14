@@ -58,12 +58,12 @@ var AttacheFileInput = React.createClass({
 
     var previews = [];
     $.each(that.state.files, function(key, result) {
+      result.multiple = that.props.multiple;
       if (result.path) {
         var parts = result.path.split('/');
         parts.splice(parts.length-1, 0, encodeURIComponent(that.props['data-geometry'] || '128x128#'));
         result.src = that.props['data-downloadurl'] + '/' + parts.join('/');
         result.filename = result.src.split('/').pop().split(/[#?]/).shift();
-        result.multiple = that.props.multiple;
       }
       var json = JSON.stringify(result);
       previews.push(
