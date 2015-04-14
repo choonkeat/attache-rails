@@ -11,8 +11,11 @@ if (typeof AttacheFilePreview === 'undefined') {
     },
 
     render: function() {
+      var previewClassName = "attache-file-preview";
+
       // progressbar
       if (this.state.srcWas != this.props.src) {
+        previewClassName = previewClassName + " attache-loading";
         var className = this.props.className || "progress-bar progress-bar-striped active" + (this.props.src ? " progress-bar-success" : "");
         var pctString = this.props.pctString || (this.props.src ? 100 : this.props.percentLoaded) + "%";
         var pctDesc   = this.props.pctDesc   || (this.props.src ? 'Loading...' : pctString);
@@ -33,7 +36,7 @@ if (typeof AttacheFilePreview === 'undefined') {
 
       // combined
       return (
-        <div className="attache-file-preview">
+        <div className={previewClassName}>
           {progress}
           {img}
           <div className="clearfix">
