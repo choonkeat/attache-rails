@@ -47,6 +47,31 @@ var AttacheFileInput = React.createClass({
     file_element.value = '';
   },
 
+  onChange: function() {
+    var file_element = this.getDOMNode().firstChild;
+    this.performUpload(file_element, file_element && file_element.files);
+  },
+
+  onDragOver: function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    $(this.getDOMNode()).addClass('attache-dragover');
+  },
+
+  onDragLeave: function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    $(this.getDOMNode()).removeClass('attache-dragover');
+  },
+
+  onDrop: function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    var file_element = this.getDOMNode().firstChild;
+    this.performUpload(file_element, e.target.files || e.dataTransfer.files);
+    $(this.getDOMNode()).removeClass('attache-dragover');
+  },
+
   setFileValue: function(key, value) {
     this.state.files[key] = value;
     this.setState(this.state);
@@ -93,7 +118,7 @@ var AttacheFileInput = React.createClass({
 
     var className = ["attache-file-selector", "attache-placeholders-count-" + placeholders.length, "attache-previews-count-" + previews.length, this.props['data-classname']].join(' ').trim();
     return (
-      <label htmlFor={that.props.id} className={className}>
+      <label htmlFor={that.props.id} className={className} onDragOver={this.onDragOver} onDragLeave={this.onDragLeave} onDrop={this.onDrop}>
         <input type="file" {...that.props} onChange={this.onChange}/>
         <input type="hidden" name={that.props.name} value="" />
         <Header {...that.props} />

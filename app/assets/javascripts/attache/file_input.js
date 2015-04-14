@@ -47,6 +47,31 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
     file_element.value = '';
   },
 
+  onChange: function() {
+    var file_element = this.getDOMNode().firstChild;
+    this.performUpload(file_element, file_element && file_element.files);
+  },
+
+  onDragOver: function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    $(this.getDOMNode()).addClass('attache-dragover');
+  },
+
+  onDragLeave: function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    $(this.getDOMNode()).removeClass('attache-dragover');
+  },
+
+  onDrop: function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    var file_element = this.getDOMNode().firstChild;
+    this.performUpload(file_element, e.target.files || e.dataTransfer.files);
+    $(this.getDOMNode()).removeClass('attache-dragover');
+  },
+
   setFileValue: function(key, value) {
     this.state.files[key] = value;
     this.setState(this.state);
@@ -93,7 +118,7 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
 
     var className = ["attache-file-selector", "attache-placeholders-count-" + placeholders.length, "attache-previews-count-" + previews.length, this.props['data-classname']].join(' ').trim();
     return (
-      React.createElement("label", {htmlFor: that.props.id, className: className}, 
+      React.createElement("label", {htmlFor: that.props.id, className: className, onDragOver: this.onDragOver, onDragLeave: this.onDragLeave, onDrop: this.onDrop}, 
         React.createElement("input", React.__spread({type: "file"},  that.props, {onChange: this.onChange})), 
         React.createElement("input", {type: "hidden", name: that.props.name, value: ""}), 
         React.createElement(Header, React.__spread({},  that.props)), 
