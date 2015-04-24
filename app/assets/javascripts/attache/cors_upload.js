@@ -4,14 +4,7 @@ var AttacheCORSUpload = (function() {
   AttacheCORSUpload.prototype.onComplete = function(uid, json) { };
   AttacheCORSUpload.prototype.onProgress = function(uid, json) { };
   AttacheCORSUpload.prototype.onError = function(uid, status) { alert(status); };
-
-  function setupFilePreview(file) {
-    if (typeof FileReader == 'undefined') return;
-    var reader = new FileReader();
-    reader.onload = function (event) { file.src = event.target.result; };
-    reader.readAsDataURL(file);
-    return file;
-  }
+  AttacheCORSUpload.prototype.createLocalThumbnail = function() { }; // for overwriting
 
   function AttacheCORSUpload(options) {
     if (options == null) options = {};
@@ -37,7 +30,8 @@ var AttacheCORSUpload = (function() {
     output = [];
     _results = [];
     for (_i = 0, _len = files.length; _i < _len; _i++) {
-      f = setupFilePreview(files[_i]);
+      f = files[_i];
+      this.createLocalThumbnail(f); // if any
       f.uid = prefix + (counter++);
       this.onProgress(f.uid, { src: f.src, filename: f.name, percentLoaded: 0, bytesLoaded: 0, bytesTotal: f.size });
       _results.push(this.performUpload(f, url));
