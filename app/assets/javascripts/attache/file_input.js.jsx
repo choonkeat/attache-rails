@@ -86,6 +86,12 @@ var AttacheFileInput = React.createClass({
 
     var previews = [];
     $.each(that.state.files, function(key, result) {
+      // json is input[value], drop non essential values
+      var copy = JSON.parse(JSON.stringify(result));
+      delete copy.src;
+      delete copy.filename;
+      var json = JSON.stringify(copy);
+      //
       result.multiple = that.props.multiple;
       if (result.path) {
         var parts = result.path.split('/');
@@ -93,7 +99,6 @@ var AttacheFileInput = React.createClass({
         result.src = that.props['data-downloadurl'] + '/' + parts.join('/');
         result.filename = result.src.split('/').pop().split(/[#?]/).shift();
       }
-      var json = JSON.stringify(result);
       previews.push(
         <div className="attache-file-input">
           <input type="hidden" name={that.props.name} value={json} readOnly="true" />

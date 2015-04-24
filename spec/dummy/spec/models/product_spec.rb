@@ -6,6 +6,7 @@ RSpec.describe Product, :type => :model do
   let(:path)       { "path/original.jpg" }
   let(:other_path) { "path/other.jpg" }
   let(:attache_response) { Hash(path: path).to_json }
+  let(:attache_fail) { Hash(bad: path).to_json }
   let(:other_attache_response) { Hash(path: other_path).to_json }
   let(:expected_attr_with_geometry) { {"path"=>path, "url"=>"http://localhost:9292/view/path/geometry/original.jpg"} }
 
@@ -34,6 +35,7 @@ RSpec.describe Product, :type => :model do
       it { expect { product.update(hero_image: attache_response) }.to change { product.hero_image }.to eq(attache_response) }
       it { expect { product.update(hero_image: "")               }.not_to change { product.hero_image } }
       it { expect { product.update(hero_image: nil)              }.not_to change { product.hero_image } }
+      it { expect { product.update(hero_image: attache_fail)     }.not_to change { product.hero_image } }
 
       context 'accepts IO object' do
         before do
@@ -111,6 +113,7 @@ RSpec.describe Product, :type => :model do
       it { expect { product.update(photos: [])                 }.to change { product.photos }.to eq([]) }
       it { expect { product.update(photos: "")                 }.to change { product.photos }.to eq([]) }
       it { expect { product.update(photos: nil)                }.to change { product.photos }.to eq([]) }
+      it { expect { product.update(photos: [attache_fail])     }.to change { product.photos }.to eq([]) }
 
       context 'accepts IO object' do
         before do

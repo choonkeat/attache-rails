@@ -92,7 +92,8 @@ module AttacheRails
         define_method "#{name}_attributes", -> (geometry) {               str = self.send(name); Utils.attache_url_for(str, geometry) if str; }
         define_method "#{name}=",           -> (value)    {
           new_value = (value.respond_to?(:read) ? Utils.attache_upload_and_get_json(value) : value)
-          super(Utils.array(new_value).first)
+          okay = JSON.parse(new_value)['path'] rescue nil
+          super(Utils.array(okay ? new_value : nil).first)
         }
         define_method "#{name}_discard_was",-> do
           new_value = self.send("#{name}")
@@ -121,7 +122,11 @@ module AttacheRails
           end
         }
         define_method "#{name}=",           -> (array)    {
-          new_value = Utils.array(array).collect {|value| value.respond_to?(:read) ? Utils.attache_upload_and_get_json(value) : value }
+          new_value = Utils.array(array).inject([]) {|sum,value|
+            hash = value.respond_to?(:read) ? Utils.attache_upload_and_get_json(value) : value
+            okay = JSON.parse(hash)['path'] rescue nil
+            okay ? sum + [hash] : sum
+          }
           super(Utils.array new_value)
         }
         define_method "#{name}_discard_was",-> do
