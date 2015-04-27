@@ -5,7 +5,7 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
     if (this.props['data-value']) $.each(JSON.parse(this.props['data-value']), function(uid, json) {
       if (json) files[uid] = json;
     });
-    return {files: files, attaches_discarded: []};
+    return {files: files, attaches_discarded: [], uploading: 0 };
   },
 
   onRemove: function(uid, e) {
@@ -32,12 +32,20 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
     this.setState(this.state);
     // upload the file via CORS
     var that = this;
+
+    that.state.uploading = that.state.uploading + files.length;
+    if (! that.state.submit_buttons) that.state.submit_buttons = $("button,input[type='submit']", $(file_element).parents('form')[0]).filter(':not(:disabled)');
+
     new AttacheCORSUpload({
       file_element: file_element,
       files:        files,
-      onComplete:   this.setFileValue,
+      onComplete:   function() {
+        that.state.uploading--;
+        that.setFileValue.apply(this, arguments);
+      },
       onProgress:   this.setFileValue,
       onError: function(uid, status) {
+        that.state.uploading--;
         that.setFileValue(uid, { pctString: '90%', pctDesc: status, className: 'progress-bar progress-bar-danger' });
       }
     });
@@ -79,6 +87,12 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
 
   render: function() {
     var that = this;
+
+    if (that.state.uploading > 0) {
+      that.state.submit_buttons.attr('disabled', true);
+    } else if (that.state.submit_buttons) {
+      that.state.submit_buttons.attr('disabled', null);
+    }
 
     var Header = eval(this.props['data-header-component'] || 'AttacheHeader');
     var Preview = eval(this.props['data-preview-component'] || 'AttacheFilePreview');
