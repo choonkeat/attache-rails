@@ -26,7 +26,7 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
     if (! files || files.length == 0) return;
     if (! this.props.multiple) {
       this.state.files = {};
-      files = Array.prototype.splice.apply(files, [0, 1]); // array of 1 element
+      files = [files[0]]; // array of 1 element
     }
 
     this.setState(this.state);
