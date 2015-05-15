@@ -113,8 +113,9 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
         result.src = that.props['data-downloadurl'] + '/' + parts.join('/');
         result.filename = result.src.split('/').pop().split(/[#?]/).shift();
       }
+      var previewKey = "preview" + key;
       previews.push(
-        React.createElement("div", {className: "attache-file-input"}, 
+        React.createElement("div", {key: previewKey, className: "attache-file-input"}, 
           React.createElement("input", {type: "hidden", name: that.props.name, value: json, readOnly: "true"}), 
           React.createElement(Preview, React.__spread({},  result, {key: key, onRemove: that.onRemove.bind(that, key)}))
         )
@@ -124,14 +125,15 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
     var placeholders = [];
     if (previews.length == 0 && that.props['data-placeholder']) $.each(JSON.parse(that.props['data-placeholder']), function(uid, src) {
       placeholders.push(
-        React.createElement(Placeholder, React.__spread({},   that.props, {src: src}))
+        React.createElement(Placeholder, React.__spread({key: "placeholder"},  that.props, {src: src}))
       );
     });
 
     var discards = [];
     $.each(that.state.attaches_discarded, function(index, discard) {
+      var discardKey = "discard" + discard.path;
       discards.push(
-        React.createElement("input", {type: "hidden", name: discard.fieldname, value: discard.path})
+        React.createElement("input", {key: discardKey, type: "hidden", name: discard.fieldname, value: discard.path})
       );
     });
 
