@@ -21,7 +21,10 @@ module AttacheRails
 
       def attache_upload_and_get_json(readable)
         uri = URI.parse(ATTACHE_UPLOAD_URL)
-        uri.query = { file: (readable.try(:original_filename) || 'noname'), **attache_auth_options }.collect {|k,v|
+        original_filename = readable.try(:original_filename) ||
+                            readable.try(:path) && File.basename(readable.try(:path)) ||
+                            'noname'
+        uri.query = { file: original_filename, **attache_auth_options }.collect {|k,v|
           CGI.escape(k.to_s) + "=" + CGI.escape(v.to_s)
         }.join('&')
         attache_retry_doing(3) { HTTPClient.post(uri, readable, {'Content-Type' => 'binary/octet-stream'}).body }
