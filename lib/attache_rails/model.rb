@@ -33,7 +33,7 @@ module AttacheRails
       def attache_url_for(json_string, geometry)
         JSON.parse(json_string).tap do |attrs|
           prefix, basename = File.split(attrs['path'])
-          attrs['url'] = [ATTACHE_DOWNLOAD_URL, prefix, CGI.escape(geometry), basename].join('/')
+          attrs['url'] = [ATTACHE_DOWNLOAD_URL, prefix, CGI.escape(geometry), CGI.escape(basename)].join('/')
         end
       end
 

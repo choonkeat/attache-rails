@@ -3,12 +3,12 @@ require 'rails_helper'
 RSpec.describe Product, :type => :model do
   let(:product) { create(:product) }
   let(:file_io) { StringIO.new("") }
-  let(:path)       { "path/original.jpg" }
+  let(:path)       { "path/phone6+ copy (1).jpg" }
   let(:other_path) { "path/other.jpg" }
   let(:attache_response) { Hash(path: path).to_json }
   let(:attache_fail) { Hash(bad: path).to_json }
   let(:other_attache_response) { Hash(path: other_path).to_json }
-  let(:expected_attr_with_geometry) { {"path"=>path, "url"=>"http://localhost:9292/view/path/geometry/original.jpg"} }
+  let(:expected_attr_with_geometry) { {"path"=>path, "url"=>"http://localhost:9292/view/path/geometry/phone6%2B+copy+%281%29.jpg"} }
 
   before do
     allow(HTTPClient).to receive(:post)
