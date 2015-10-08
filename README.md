@@ -1,5 +1,6 @@
 # attache_rails
 
+[![Gem Version](https://badge.fury.io/rb/attache_rails.svg)](https://badge.fury.io/rb/attache_rails)
 [![Build Status](https://travis-ci.org/choonkeat/attache_rails.svg?branch=master)](https://travis-ci.org/choonkeat/attache_rails)
 
 Ruby on Rails integration for [attache server](https://github.com/choonkeat/attache)
