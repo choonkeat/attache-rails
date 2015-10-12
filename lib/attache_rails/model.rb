@@ -12,8 +12,17 @@ module AttacheRails
         Array.wrap(value).reject(&:blank?)
       end
 
+      def jsonify(value)
+        case value
+        when Hash
+          value
+        else
+          JSON.parse(value.to_s) rescue Hash.new
+        end
+      end
+
       def url_for(json_string, geometry)
-        JSON.parse(json_string).tap do |attrs|
+        json_string.tap do |attrs|
           attrs['url'] = attache_url_for(attrs['path'], geometry)
         end
       end
@@ -45,16 +54,16 @@ module AttacheRails
         serialize name, JSON
         define_method "#{name}_options",    -> (geometry, options = {}) { Utils.attache_options(geometry, Utils.array(self.send("#{name}_attributes", geometry)), multiple: false, **options) }
         define_method "#{name}_url",        -> (geometry) {               self.send("#{name}_attributes", geometry).try(:[], 'url') }
-        define_method "#{name}_attributes", -> (geometry) {               str = self.send(name); Utils.url_for(str, geometry) if str; }
+        define_method "#{name}_attributes", -> (geometry) {               obj = self.send(name); Utils.url_for(obj, geometry) if obj; }
         define_method "#{name}=",           -> (value)    {
-          new_value = (value.respond_to?(:read) ? Utils.attache_upload(value) : value)
-          okay = JSON.parse(new_value)['path'] rescue nil
+          new_value = Utils.jsonify(value.respond_to?(:read) && Utils.attache_upload(value) || value)
+          okay = new_value.respond_to?(:[]) && (new_value['path'] || new_value[:path])
           super(Utils.array(okay ? new_value : nil).first)
         }
         define_method "#{name}_discard_was",-> do
           new_value = self.send("#{name}")
           old_value = self.send("#{name}_was")
-          obsoleted = Utils.array(old_value).collect {|x| JSON.parse(x)['path'] } - Utils.array(new_value).collect {|x| JSON.parse(x)['path'] }
+          obsoleted = Utils.array(old_value).collect {|x| x['path'] } - Utils.array(new_value).collect {|x| x['path'] }
           self.attaches_discarded ||= []
           self.attaches_discarded.push(*obsoleted)
         end
@@ -73,14 +82,14 @@ module AttacheRails
         define_method "#{name}_options",    -> (geometry, options = {}) { Utils.attache_options(geometry, self.send("#{name}_attributes", geometry), multiple: true, **options) }
         define_method "#{name}_urls",       -> (geometry) {               self.send("#{name}_attributes", geometry).collect {|attrs| attrs['url'] } }
         define_method "#{name}_attributes", -> (geometry) {
-          (self.send(name) || []).inject([]) do |sum, str|
-            sum + Utils.array(str.present? && Utils.url_for(str, geometry))
+          (self.send(name) || []).inject([]) do |sum, obj|
+            sum + Utils.array(obj.present? && Utils.url_for(obj, geometry))
           end
         }
         define_method "#{name}=",           -> (array)    {
           new_value = Utils.array(array).inject([]) {|sum,value|
-            hash = value.respond_to?(:read) ? Utils.attache_upload(value) : value
-            okay = JSON.parse(hash)['path'] rescue nil
+            hash = Utils.jsonify(value.respond_to?(:read) && Utils.attache_upload(value) || value)
+            okay = hash.respond_to?(:[]) && (hash['path'] || hash[:path])
             okay ? sum + [hash] : sum
           }
           super(Utils.array new_value)
@@ -88,7 +97,7 @@ module AttacheRails
         define_method "#{name}_discard_was",-> do
           new_value = [*self.send("#{name}")]
           old_value = [*self.send("#{name}_was")]
-          obsoleted = old_value.collect {|x| JSON.parse(x)['path'] } - new_value.collect {|x| JSON.parse(x)['path'] }
+          obsoleted = old_value.collect {|x| x['path'] } - new_value.collect {|x| x['path'] }
           self.attaches_discarded ||= []
           obsoleted.each {|path| self.attaches_discarded.push(path) }
         end
