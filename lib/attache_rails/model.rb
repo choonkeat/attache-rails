@@ -33,11 +33,41 @@ module AttacheRails
       base.extend ClassMethods
       base.class_eval do
         attr_accessor :attaches_discarded
-        after_commit  :attaches_discard!, if: :attaches_discarded
+        after_commit if: :attaches_discarded do |instance|
+          instance.attaches_discard!(instance.attaches_discarded)
+        end
       end
     end
 
-    def attaches_discard!(files = attaches_discarded)
+    def attache_field_options(attr_value, geometry, options = {})
+      Utils.attache_options(geometry, attache_field_attributes(attr_value, geometry), **options)
+    end
+
+    def attache_field_urls(attr_value, geometry)
+      attache_field_attributes(attr_value, geometry).collect {|attrs| attrs['url']}
+    end
+
+    def attache_field_attributes(attr_value, geometry)
+      Utils.array(attr_value).inject([]) do |sum, obj|
+        sum + Utils.array(obj.present? && Utils.url_for(obj, geometry))
+      end
+    end
+
+    def attache_field_set(array)
+      new_value = Utils.array(array).inject([]) {|sum,value|
+        hash = Utils.jsonify(value.respond_to?(:read) && Utils.attache_upload(value) || value)
+        okay = hash.respond_to?(:[]) && (hash['path'] || hash[:path])
+        okay ? sum + [hash] : sum
+      }
+      Utils.array(new_value)
+    end
+
+    def attache_mark_for_discarding(old_value, new_value, attaches_discarded)
+      obsoleted = Utils.array(old_value).collect {|x| x['path'] } - Utils.array(new_value).collect {|x| x['path'] }
+      obsoleted.each {|path| attaches_discarded.push(path) }
+    end
+
+    def attaches_discard!(files)
       files.reject!(&:blank?)
       files.uniq!
       if files.present?
@@ -52,61 +82,22 @@ module AttacheRails
     module ClassMethods
       def has_one_attache(name)
         serialize name, JSON
-        define_method "#{name}_options",    -> (geometry, options = {}) { Utils.attache_options(geometry, Utils.array(self.send("#{name}_attributes", geometry)), multiple: false, **options) }
-        define_method "#{name}_url",        -> (geometry) {               self.send("#{name}_attributes", geometry).try(:[], 'url') }
-        define_method "#{name}_attributes", -> (geometry) {               obj = self.send(name); Utils.url_for(obj, geometry) if obj; }
-        define_method "#{name}=",           -> (value)    {
-          new_value = Utils.jsonify(value.respond_to?(:read) && Utils.attache_upload(value) || value)
-          okay = new_value.respond_to?(:[]) && (new_value['path'] || new_value[:path])
-          super(Utils.array(okay ? new_value : nil).first)
-        }
-        define_method "#{name}_discard_was",-> do
-          new_value = self.send("#{name}")
-          old_value = self.send("#{name}_was")
-          obsoleted = Utils.array(old_value).collect {|x| x['path'] } - Utils.array(new_value).collect {|x| x['path'] }
-          self.attaches_discarded ||= []
-          self.attaches_discarded.push(*obsoleted)
-        end
-        after_update "#{name}_discard_was"
-        define_method "#{name}_discard",    -> do
-          self.attaches_discarded ||= []
-          if attrs = self.send("#{name}_attributes", 'original')
-            self.attaches_discarded.push(attrs['path'])
-          end
-        end
-        after_destroy "#{name}_discard"
+        define_method "#{name}_options",    -> (geometry, options = {}) { attache_field_options(self.send(name), geometry, Hash(multiple: false).merge(options)) }
+        define_method "#{name}_url",        -> (geometry)               { attache_field_urls(self.send(name), geometry).try(:first) }
+        define_method "#{name}_attributes", -> (geometry)               { attache_field_attributes(self.send(name), geometry).try(:first) }
+        define_method "#{name}=",           -> (value)                  { super(attache_field_set(Utils.array(value)).try(:first)) }
+        after_update                        ->                          { self.attaches_discarded ||= []; attache_mark_for_discarding(self.send("#{name}_was"), self.send("#{name}"), self.attaches_discarded) }
+        after_destroy                       ->                          { self.attaches_discarded ||= []; attache_mark_for_discarding(self.send("#{name}_was"), [], self.attaches_discarded) }
       end
 
       def has_many_attaches(name)
         serialize name, JSON
-        define_method "#{name}_options",    -> (geometry, options = {}) { Utils.attache_options(geometry, self.send("#{name}_attributes", geometry), multiple: true, **options) }
-        define_method "#{name}_urls",       -> (geometry) {               self.send("#{name}_attributes", geometry).collect {|attrs| attrs['url'] } }
-        define_method "#{name}_attributes", -> (geometry) {
-          (self.send(name) || []).inject([]) do |sum, obj|
-            sum + Utils.array(obj.present? && Utils.url_for(obj, geometry))
-          end
-        }
-        define_method "#{name}=",           -> (array)    {
-          new_value = Utils.array(array).inject([]) {|sum,value|
-            hash = Utils.jsonify(value.respond_to?(:read) && Utils.attache_upload(value) || value)
-            okay = hash.respond_to?(:[]) && (hash['path'] || hash[:path])
-            okay ? sum + [hash] : sum
-          }
-          super(Utils.array new_value)
-        }
-        define_method "#{name}_discard_was",-> do
-          new_value = [*self.send("#{name}")]
-          old_value = [*self.send("#{name}_was")]
-          obsoleted = old_value.collect {|x| x['path'] } - new_value.collect {|x| x['path'] }
-          self.attaches_discarded ||= []
-          obsoleted.each {|path| self.attaches_discarded.push(path) }
-        end
-        after_update "#{name}_discard_was"
-        define_method "#{name}_discard",    -> do
-          self.attaches_discarded ||= []
-          self.send("#{name}_attributes", 'original').each {|attrs| self.attaches_discarded.push(attrs['path']) }
-        end
-        after_destroy "#{name}_discard"
+        define_method "#{name}_options",    -> (geometry, options = {}) { attache_field_options(self.send(name), geometry, Hash(multiple: true).merge(options)) }
+        define_method "#{name}_urls",       -> (geometry)               { attache_field_urls(self.send(name), geometry) }
+        define_method "#{name}_attributes", -> (geometry)               { attache_field_attributes(self.send(name), geometry) }
+        define_method "#{name}=",           -> (value)                  { super(attache_field_set(Utils.array(value))) }
+        after_update                        ->                          { self.attaches_discarded ||= []; attache_mark_for_discarding(self.send("#{name}_was"), self.send("#{name}"), self.attaches_discarded) }
+        after_destroy                       ->                          { self.attaches_discarded ||= []; attache_mark_for_discarding(self.send("#{name}_was"), [], self.attaches_discarded) }
       end
     end
   end
