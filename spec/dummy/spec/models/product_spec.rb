@@ -39,7 +39,7 @@ RSpec.describe Product, :type => :model do
 
       context 'accepts IO object' do
         before do
-          expect(AttacheRails::Utils).to receive(:attache_auth_options).and_return({})
+          expect(Attache::API::V1).to receive(:attache_auth_options).and_return({})
           allow(HTTPClient).to receive(:post).and_return(double(:response, body: attache_response))
         end
 
@@ -67,9 +67,9 @@ RSpec.describe Product, :type => :model do
 
       context 'discarding old values with auth_options' do
         before do
-          expect(AttacheRails::Utils).to receive(:attache_auth_options).and_return({})
+          expect(Attache::API::V1).to receive(:attache_auth_options).and_return({})
           expect(HTTPClient).to receive(:post_content) do |target_url, params|
-            expect(params).to eq(path)
+            expect(params).to eq(paths: path)
           end
         end
 
@@ -79,13 +79,13 @@ RSpec.describe Product, :type => :model do
 
       context 'discarding new values with auth_options' do
         before do
-          expect(AttacheRails::Utils).to receive(:attache_auth_options).and_return({})
+          expect(Attache::API::V1).to receive(:attache_auth_options).and_return({})
           expect(HTTPClient).to receive(:post_content) do |target_url, params|
-            expect(params).to eq(other_path)
+            expect(params).to eq(paths: other_path)
           end
         end
 
-        it { product.update(attaches_discarded: [other_attache_response]) }
+        it { product.update(attaches_discarded: [other_path]) }
       end
     end
   end
@@ -117,7 +117,7 @@ RSpec.describe Product, :type => :model do
 
       context 'accepts IO object' do
         before do
-          expect(AttacheRails::Utils).to receive(:attache_auth_options).and_return({})
+          expect(Attache::API::V1).to receive(:attache_auth_options).and_return({})
           allow(HTTPClient).to receive(:post).and_return(double(:response, body: attache_response))
         end
 
@@ -146,7 +146,7 @@ RSpec.describe Product, :type => :model do
       context 'discarding old values with auth_options' do
         before do
           expect(HTTPClient).to receive(:post_content) do |target_url, params|
-            expect(params).to eq(path)
+            expect(params).to eq(paths: path)
           end
         end
 
@@ -157,11 +157,11 @@ RSpec.describe Product, :type => :model do
       context 'discarding new values with auth_options' do
         before do
           expect(HTTPClient).to receive(:post_content) do |target_url, params|
-            expect(params).to eq(other_path)
+            expect(params).to eq(paths: other_path)
           end
         end
 
-        it { product.update(attaches_discarded: [JSON.parse(other_attache_response)]) }
+        it { product.update(attaches_discarded: [other_path]) }
       end
     end
   end
