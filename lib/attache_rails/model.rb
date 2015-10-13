@@ -5,9 +5,13 @@ require "attache/api"
 
 module AttacheRails
   module Model
+    include Attache::API::Model
+
     def self.included(base)
-      base.send(:include, Attache::API::Model)
+      # has_one_attache, has_many_attaches
       base.extend ClassMethods
+
+      # `discard` management
       base.class_eval do
         attr_accessor :attaches_discarded
         after_commit if: :attaches_discarded do |instance|
@@ -17,8 +21,16 @@ module AttacheRails
     end
 
     module ClassMethods
+      def attache_setup_column(name)
+        case coltype = column_for_attribute(name).type
+        when :text, :string, :binary
+          serialize name, JSON
+        end
+      rescue Exception
+      end
+
       def has_one_attache(name)
-        serialize name, JSON
+        attache_setup_column(name)
         define_method "#{name}_options",    -> (geometry, options = {}) { attache_field_options(self.send(name), geometry, Hash(multiple: false).merge(options)) }
         define_method "#{name}_url",        -> (geometry)               { attache_field_urls(self.send(name), geometry).try(:first) }
         define_method "#{name}_attributes", -> (geometry)               { attache_field_attributes(self.send(name), geometry).try(:first) }
@@ -28,7 +40,7 @@ module AttacheRails
       end
 
       def has_many_attaches(name)
-        serialize name, JSON
+        attache_setup_column(name)
         define_method "#{name}_options",    -> (geometry, options = {}) { attache_field_options(self.send(name), geometry, Hash(multiple: true).merge(options)) }
         define_method "#{name}_urls",       -> (geometry)               { attache_field_urls(self.send(name), geometry) }
         define_method "#{name}_attributes", -> (geometry)               { attache_field_attributes(self.send(name), geometry) }
