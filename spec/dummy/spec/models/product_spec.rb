@@ -32,10 +32,10 @@ RSpec.describe Product, :type => :model do
     }
 
     describe 'hero_image=' do
-      it { expect { product.update(hero_image: JSON.parse(attache_response)) }.to change { product.hero_image }.to eq(JSON.parse(attache_response)) }
+      it { expect { product.update(hero_image: attache_response) }.to change { product.hero_image }.to eq(JSON.parse(attache_response)) }
       it { expect { product.update(hero_image: "")               }.not_to change { product.hero_image } }
       it { expect { product.update(hero_image: nil)              }.not_to change { product.hero_image } }
-      it { expect { product.update(hero_image: JSON.parse(attache_fail))     }.not_to change { product.hero_image } }
+      it { expect { product.update(hero_image: attache_fail)     }.not_to change { product.hero_image } }
 
       context 'accepts IO object' do
         before do
@@ -107,13 +107,13 @@ RSpec.describe Product, :type => :model do
     }
 
     describe 'photos=' do
-      it { expect { product.update(photos: [JSON.parse(attache_response)]) }.to change { product.photos }.to eq([JSON.parse(attache_response)]) }
+      it { expect { product.update(photos: [attache_response]) }.to change { product.photos }.to eq([JSON.parse(attache_response)]) }
       it { expect { product.update(photos: [""])               }.to change { product.photos }.to eq([]) }
       it { expect { product.update(photos: [nil])              }.to change { product.photos }.to eq([]) }
       it { expect { product.update(photos: [])                 }.to change { product.photos }.to eq([]) }
       it { expect { product.update(photos: "")                 }.to change { product.photos }.to eq([]) }
       it { expect { product.update(photos: nil)                }.to change { product.photos }.to eq([]) }
-      it { expect { product.update(photos: [JSON.parse(attache_fail)])     }.to change { product.photos }.to eq([]) }
+      it { expect { product.update(photos: [attache_fail])     }.to change { product.photos }.to eq([]) }
 
       context 'accepts IO object' do
         before do
@@ -126,7 +126,7 @@ RSpec.describe Product, :type => :model do
     end
 
     context 'with value' do
-      let(:product) { create(:product, photos: [JSON.parse(attache_response)]) }
+      let(:product) { create(:product, photos: [attache_response]) }
 
       it { expect(product.photos_attributes('geometry')).to eq([expected_attr_with_geometry]) }
       it { expect(product.photos_urls("geometry")).to eq([expected_attr_with_geometry['url']]) }
@@ -150,7 +150,7 @@ RSpec.describe Product, :type => :model do
           end
         end
 
-        it { product.update(photos: [JSON.parse(other_attache_response)]) }
+        it { product.update(photos: [other_attache_response]) }
         it { product.destroy }
       end
 

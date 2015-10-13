@@ -2,13 +2,15 @@
 
 [![Build Status](https://travis-ci.org/choonkeat/attache_rails.svg?branch=master)](https://travis-ci.org/choonkeat/attache_rails)
 
-Ruby on Rails integration for [attache server](https://github.com/choonkeat/attache)
+Ruby on Rails / ActiveRecord integration for [attache server](https://github.com/choonkeat/attache) using [attache/api](https://github.com/choonkeat/attache_api)
 
 ## Dependencies
 
 [React](https://github.com/reactjs/react-rails), jQuery, Bootstrap 3
 
 ## Installation
+
+**WARNING: Please see upgrade notes below if you are upgrading from V2**
 
 Install the attache_rails package from Rubygems:
 
@@ -46,7 +48,7 @@ $(document).on('cocoon:after-insert', AttacheRails.upgrade_fileinputs);
 
 ### Database
 
-To use `attache`, you only need to store the JSON attributes given to you after you've uploaded a file. So if you have an existing model, you only need to add a text column
+To use `attache`, you only need to store the JSON attributes given to you after you've uploaded a file. So if you have an existing model, you only need to add a text column (PostgreSQL users see below)
 
 ``` bash
 rails generate migration AddPhotoPathToUsers photo:text
@@ -134,6 +136,35 @@ or
 
 * If this variable is not set, then upload requests will not be signed & `ATTACHE_UPLOAD_DURATION` will be ignored
 * If this variable is set, it must be the same value as `SECRET_KEY` is set on the `attache` server
+
+### PostgreSQL
+
+Take advantage of the [json support](http://guides.rubyonrails.org/active_record_postgresql.html#json) by using the `json` column type instead
+
+``` bash
+rails generate migration AddPhotoPathToUsers photo:json
+```
+
+This opens up the possibility to query inside the column, e.g.
+
+``` ruby
+User.where("photo ->> 'content_type' = ?", 'image/png')
+```
+
+## Upgrading from v2
+
+`json` values in the database column has changed in v3. Previously, we are working with json *strings*, now we are working with json *objects*, aka `Hash`. i.e.
+
+- in previous version, `@user.photos` value could be something like `["{\"path\":\"dirname/file.jpg\"}"]`. Notice that it is an array of 1 `String`.
+- in v3, the value would be `[{"path"=>"dirname/file.jpg"}]`. Notice that it is an array of 1 `Hash`
+
+If you're upgrading from V2, we have a generator that will create a migration file to fixup the data
+
+```
+rails g attache_rails:upgrade_v2_to_v3
+```
+
+NOTE: It is highly recommended that developers verify the migration with a dump of the production data in a staging[] environment. Please take a look at the generated migration file.
 
 # License
 

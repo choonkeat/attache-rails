@@ -1,0 +1,45 @@
+class <%= migration_class_name %> < ActiveRecord::Migration
+  <%- ($has_one_attache + $has_many_attaches).each do |(klass, column)| -%>
+  class <%= klass %> < ActiveRecord::Base; serialize :<%= column %>, JSON; end
+  <%- end -%>
+
+  def self.up
+    # has_one_attache
+    <%- $has_one_attache.each do |(klass, column)| -%>
+    <%= klass %>.where.not(<%= column %>: [nil, ""]).find_each do |obj|
+      if obj[:<%= column %>].kind_of?(String)
+        obj.update(<%= column %>: JSON.parse(obj[:<%= column %>]))
+      end
+    end
+    <%- end -%>
+
+    # has_many_attaches
+    <%- $has_many_attaches.each do |(klass, column)| -%>
+    <%= klass %>.where.not(<%= column %>: [nil, ""]).find_each do |obj|
+      if obj[:<%= column %>].first.kind_of?(String)
+        obj.update(<%= column %>: obj[:<%= column %>].collect {|v| JSON.parse(v) })
+      end
+    end
+    <%- end -%>
+  end
+
+  def self.down
+    # has_one_attache
+    <%- $has_one_attache.each do |(klass, column)| -%>
+    <%= klass %>.where.not(<%= column %>: [nil, ""]).find_each do |obj|
+      if obj[:<%= column %>].kind_of?(Hash)
+        obj.update(<%= column %>: obj[:<%= column %>].to_json)
+      end
+    end
+    <%- end -%>
+
+    # has_many_attaches
+    <%- $has_many_attaches.each do |(klass, column)| -%>
+    <%= klass %>.where.not(<%= column %>: [nil, ""]).find_each do |obj|
+      if obj[:<%= column %>].first.kind_of?(Hash)
+        obj.update(<%= column %>: obj[:<%= column %>].collect {|v| v.to_json })
+      end
+    end
+    <%- end -%>
+  end
+end
