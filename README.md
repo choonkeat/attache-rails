@@ -139,7 +139,7 @@ or
 
 ### PostgreSQL
 
-Take advantage of the [json support](http://guides.rubyonrails.org/active_record_postgresql.html#json) by using the `json` column type instead
+Take advantage of the [json support](http://guides.rubyonrails.org/active_record_postgresql.html#json) by using the [`json` or `jsonb` column types](http://www.postgresql.org/docs/9.4/static/functions-json.html) instead
 
 ``` bash
 rails generate migration AddPhotoPathToUsers photo:json
@@ -164,7 +164,7 @@ If you're upgrading from V2, we have a generator that will create a migration fi
 rails g attache_rails:upgrade_v2_to_v3
 ```
 
-NOTE: It is highly recommended that developers verify the migration with a dump of the production data in a staging[] environment. Please take a look at the generated migration file.
+NOTE: It is highly recommended that developers verify the migration with a dump of the production data in a staging environment. Please take a look at the generated migration file.
 
 # License
 
