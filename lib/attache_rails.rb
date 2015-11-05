@@ -8,3 +8,4 @@ end
 
 require "attache_rails/engine"
 require "attache_rails/model"
+require "attache/api/test" if defined?(Rails) && Rails.env.test?

@@ -10,11 +10,6 @@ RSpec.describe Product, :type => :model do
   let(:other_attache_response) { Hash(path: other_path).to_json }
   let(:expected_attr_with_geometry) { {"path"=>path, "url"=>"http://localhost:9292/view/path/geometry/phone6%2B+copy+%281%29.jpg"} }
 
-  before do
-    allow(HTTPClient).to receive(:post)
-    allow(HTTPClient).to receive(:post_content)
-  end
-
   context 'has_one_attache' do
 
     it { expect(product.hero_image).to eq(nil) }
