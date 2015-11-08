@@ -1,9 +1,9 @@
-# attache_rails
+# attache-rails
 
-[![Gem Version](https://badge.fury.io/rb/attache_rails.svg)](https://badge.fury.io/rb/attache_rails)
-[![Build Status](https://travis-ci.org/choonkeat/attache_rails.svg?branch=master)](https://travis-ci.org/choonkeat/attache_rails)
+[![Gem Version](https://badge.fury.io/rb/attache-rails.svg)](https://badge.fury.io/rb/attache-rails)
+[![Build Status](https://travis-ci.org/choonkeat/attache-rails.svg?branch=master)](https://travis-ci.org/choonkeat/attache-rails)
 
-Ruby on Rails / ActiveRecord integration for [attache server](https://github.com/choonkeat/attache) using [attache/api](https://github.com/choonkeat/attache_api)
+Ruby on Rails / ActiveRecord integration for [attache server](https://github.com/choonkeat/attache) using [attache/api](https://github.com/choonkeat/attache-api)
 
 ## Dependencies
 
@@ -13,16 +13,16 @@ Ruby on Rails / ActiveRecord integration for [attache server](https://github.com
 
 **WARNING: Please see upgrade notes below if you are upgrading from V2**
 
-Install the attache_rails package from Rubygems:
+Install the attache-rails package from Rubygems:
 
 ``` bash
-gem install attache_rails
+gem install attache-rails
 ```
 
 Or add this to your `Gemfile`
 
 ``` ruby
-gem "attache_rails"
+gem "attache-rails"
 ```
 
 Add the attache javascript to your `application.js`
@@ -162,7 +162,7 @@ User.where("photo ->> 'content_type' = ?", 'image/png')
 If you're upgrading from V2, we have a generator that will create a migration file to fixup the data
 
 ```
-rails g attache_rails:upgrade_v2_to_v3
+rails g attache:rails:upgrade_v2_to_v3
 ```
 
 NOTE: It is highly recommended that developers verify the migration with a dump of the production data in a staging environment. Please take a look at the generated migration file.
