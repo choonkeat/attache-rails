@@ -109,9 +109,10 @@ var AttacheFileInput = React.createClass({displayName: "AttacheFileInput",
       result.multiple = that.props.multiple;
       if (result.path) {
         var parts = result.path.split('/');
-        parts.splice(parts.length-1, 0, encodeURIComponent(that.props['data-geometry'] || '128x128#'));
+        result.filename = parts.pop().split(/[#?]/).shift();
+        parts.push(encodeURIComponent(that.props['data-geometry'] || '128x128#'));
+        parts.push(encodeURIComponent(result.filename));
         result.src = that.props['data-downloadurl'] + '/' + parts.join('/');
-        result.filename = result.src.split('/').pop().split(/[#?]/).shift();
       }
       var previewKey = "preview" + key;
       previews.push(
