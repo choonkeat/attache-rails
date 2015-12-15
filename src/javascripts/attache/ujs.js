@@ -4,8 +4,6 @@
 
 import { AttacheFileInput } from './file_input'
 
-console.log('AttacheFileInput', AttacheFileInput)
-
 var upgradeFileInput = function () {
   var safeWords = { 'class': 'className', 'for': 'htmlFor' }
   var sel = document.getElementsByClassName('enable-attache')
