@@ -1,3 +1,4 @@
+/*global $*/
 /*global React*/
 
 export var Bootstrap3FilePreview = React.createClass({
@@ -5,8 +6,13 @@ export var Bootstrap3FilePreview = React.createClass({
     return { srcWas: '' }
   },
 
-  onSrcLoaded () {
+  onSrcLoaded (event) {
     this.setState({ srcWas: this.props.src })
+    $(event.target).trigger('attache:imgload')
+  },
+
+  onSrcError (event) {
+    $(event.target).trigger('attache:imgerror')
   },
 
   render () {
@@ -36,7 +42,7 @@ export var Bootstrap3FilePreview = React.createClass({
 
     // img tag
     if (this.props.src) {
-      var img = <img src={this.props.src} onLoad={this.onSrcLoaded} />
+      var img = <img src={this.props.src} onLoad={this.onSrcLoaded} onError={this.onSrcError} />
     }
 
     // combined
