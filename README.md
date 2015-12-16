@@ -31,7 +31,7 @@ Add the attache javascript to your `application.js`
 //= require attache
 ```
 
-If you want to customize the file upload look and feel, define your own react `<AttacheFilePreview/>` renderer *before* including the attache js. For example,
+If you want to customize the file upload look and feel, define your own React `<AttacheFilePreview/>`, `<AttacheHeader/>`, `<AttachePlaceholder/>` renderer *before* including the attache js. For example,
 
 ``` javascript
 //= require ./my_attache_file_preview.js
