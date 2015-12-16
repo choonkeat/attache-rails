@@ -34,7 +34,7 @@ RSpec.describe Product, :type => :model do
 
       context 'accepts IO object' do
         before do
-          expect(Attache::API::V1).to receive(:attache_auth_options).and_return({})
+          expect(Attache::API::V1).to receive(:attache_auth_options).and_return({}).at_least(1).times
           allow(HTTPClient).to receive(:post).and_return(double(:response, body: attache_response))
         end
 
@@ -62,22 +62,23 @@ RSpec.describe Product, :type => :model do
 
       context 'discarding old values with auth_options' do
         before do
-          expect(Attache::API::V1).to receive(:attache_auth_options).and_return({})
-          expect(HTTPClient).to receive(:post_content) do |target_url, params|
-            expect(params).to eq(paths: path)
-          end
+          expect(Attache::API::V1).to receive(:attache_auth_options).and_return({}).at_least(1).times
+          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_BACKUP_URL), paths: path)
+          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_DELETE_URL), paths: path)
         end
 
-        it { product.update(hero_image: other_attache_response) }
+        it {
+          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_BACKUP_URL), paths: other_path)
+          product.update(hero_image: other_attache_response)
+        }
         it { product.destroy }
       end
 
       context 'discarding new values with auth_options' do
         before do
-          expect(Attache::API::V1).to receive(:attache_auth_options).and_return({})
-          expect(HTTPClient).to receive(:post_content) do |target_url, params|
-            expect(params).to eq(paths: other_path)
-          end
+          expect(Attache::API::V1).to receive(:attache_auth_options).and_return({}).at_least(1).times
+          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_BACKUP_URL), paths: path).exactly(2).times
+          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_DELETE_URL), paths: other_path)
         end
 
         it { product.update(attaches_discarded: [other_path]) }
@@ -112,7 +113,7 @@ RSpec.describe Product, :type => :model do
 
       context 'accepts IO object' do
         before do
-          expect(Attache::API::V1).to receive(:attache_auth_options).and_return({})
+          expect(Attache::API::V1).to receive(:attache_auth_options).and_return({}).at_least(1).times
           allow(HTTPClient).to receive(:post).and_return(double(:response, body: attache_response))
         end
 
@@ -140,20 +141,21 @@ RSpec.describe Product, :type => :model do
 
       context 'discarding old values with auth_options' do
         before do
-          expect(HTTPClient).to receive(:post_content) do |target_url, params|
-            expect(params).to eq(paths: path)
-          end
+          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_BACKUP_URL), paths: path)
+          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_DELETE_URL), paths: path).exactly(1).times
         end
 
-        it { product.update(photos: [other_attache_response]) }
+        it {
+          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_BACKUP_URL), paths: other_path)
+          product.update(photos: [other_attache_response])
+        }
         it { product.destroy }
       end
 
       context 'discarding new values with auth_options' do
         before do
-          expect(HTTPClient).to receive(:post_content) do |target_url, params|
-            expect(params).to eq(paths: other_path)
-          end
+          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_BACKUP_URL), paths: path).exactly(2).times
+          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_DELETE_URL), paths: other_path).exactly(1).times
         end
 
         it { product.update(attaches_discarded: [other_path]) }
