@@ -142,7 +142,7 @@ RSpec.describe Product, :type => :model do
       context 'discarding old values with auth_options' do
         before do
           expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_BACKUP_URL), paths: path)
-          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_DELETE_URL), paths: path).exactly(1).times
+          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_DELETE_URL), paths: path)
         end
 
         it {
