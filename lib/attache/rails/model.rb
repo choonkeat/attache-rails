@@ -38,6 +38,7 @@ module Attache
           define_method "#{name}=",           -> (value)                  { super(attache_field_set(Array.wrap(value)).try(:first)) }
           after_update                        ->                          { self.attaches_discarded ||= []; attache_mark_for_discarding(self.send("#{name}_was"), self.send("#{name}"), self.attaches_discarded) }
           after_destroy                       ->                          { self.attaches_discarded ||= []; attache_mark_for_discarding(self.send("#{name}_was"), [], self.attaches_discarded) }
+          after_commit                        ->                          { file = self.send(name).try(:[], 'path'); self.attaches_backup!([file]) if file.present? }, on: [:create, :update]
         end
 
         def has_many_attaches(name)
@@ -48,6 +49,7 @@ module Attache
           define_method "#{name}=",           -> (value)                  { super(attache_field_set(Array.wrap(value))) }
           after_update                        ->                          { self.attaches_discarded ||= []; attache_mark_for_discarding(self.send("#{name}_was"), self.send("#{name}"), self.attaches_discarded) }
           after_destroy                       ->                          { self.attaches_discarded ||= []; attache_mark_for_discarding(self.send("#{name}_was"), [], self.attaches_discarded) }
+          after_commit                        ->                          { files = Array.wrap(self.send(name)).collect {|x| x['path']}; self.attaches_backup!(files) if files.present? }, on: [:create, :update]
         end
       end
     end
