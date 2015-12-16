@@ -77,7 +77,7 @@ RSpec.describe Product, :type => :model do
       context 'discarding new values with auth_options' do
         before do
           expect(Attache::API::V1).to receive(:attache_auth_options).and_return({}).at_least(1).times
-          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_BACKUP_URL), paths: path).exactly(2).times
+          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_BACKUP_URL), paths: path)
           expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_DELETE_URL), paths: other_path)
         end
 
@@ -154,8 +154,8 @@ RSpec.describe Product, :type => :model do
 
       context 'discarding new values with auth_options' do
         before do
-          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_BACKUP_URL), paths: path).exactly(2).times
-          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_DELETE_URL), paths: other_path).exactly(1).times
+          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_BACKUP_URL), paths: path)
+          expect(HTTPClient).to receive(:post_content).with(URI.parse(Attache::API::V1::ATTACHE_DELETE_URL), paths: other_path)
         end
 
         it { product.update(attaches_discarded: [other_path]) }
