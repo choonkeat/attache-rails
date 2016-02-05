@@ -4,6 +4,7 @@ var source = require('vinyl-source-stream')
 var connect = require('gulp-connect')
 var babelify = require('babelify')
 var browserify = require('browserify')
+var es = require('event-stream')
 
 var config = {
   src: {
@@ -28,16 +29,26 @@ gulp.task('watch', function () {
 })
 
 gulp.task('js', ['lint'], function (done) {
-  return browserify({ entries: [config.src.dir + '/' + config.src.mainjs], debug: true })
-    .transform(babelify)
-    .bundle()
-    .on('error', function () {
-      console.error.apply(console, arguments)
-      done()
-    })
-    .pipe(source(config.src.mainjs))
-    .pipe(gulp.dest(config.dest.dir))
-    .pipe(connect.reload())
+  var files = [
+    config.src.dir + '/' + 'attache/cors_upload.js',
+    config.src.dir + '/' + config.src.mainjs
+  ]
+
+  var tasks = files.map(function (entry) {
+    var name = entry.substring(config.src.dir.length + 1)
+    return browserify({ entries: [entry], debug: true, standalone: name.replace(/\.\w+$/, '').replace(/\W+/g, '_') })
+      .transform(babelify)
+      .bundle()
+      .on('error', function () {
+        console.error.apply(console, arguments)
+        done()
+      })
+      .pipe(source(name))
+      .pipe(gulp.dest(config.dest.dir))
+      .pipe(connect.reload())
+  })
+  // create a merged stream
+  return es.merge.apply(null, tasks)
 })
 
 gulp.task('connect', ['js', 'watch'], function () {

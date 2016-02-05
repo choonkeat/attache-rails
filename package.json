@@ -4,6 +4,7 @@
   "description": "[![Gem Version](https://badge.fury.io/rb/attache-rails.svg)](https://badge.fury.io/rb/attache-rails) [![Build Status](https://travis-ci.org/choonkeat/attache-rails.svg?branch=master)](https://travis-ci.org/choonkeat/attache-rails)",
   "main": "gulpfile.js",
   "dependencies": {
+    "event-stream": "^3.3.2"
   },
   "devDependencies": {
     "babel": "^6.3.13",
