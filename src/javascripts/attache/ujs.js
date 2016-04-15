@@ -24,5 +24,5 @@ var upgradeFileInput = function () {
   }
 }
 
-$(document).on('page:change', upgradeFileInput)
+$(document).on('page:change turbolinks:load', upgradeFileInput)
 $(upgradeFileInput)
