@@ -31,6 +31,8 @@ gulp.task('watch', function () {
 gulp.task('js', ['lint'], function (done) {
   var files = [
     config.src.dir + '/' + 'attache/cors_upload.js',
+    config.src.dir + '/' + 'attache/bootstrap3.js',
+    config.src.dir + '/' + 'attache/file_input.js',
     config.src.dir + '/' + config.src.mainjs
   ]
 
