@@ -31,6 +31,28 @@ Add the attache javascript to your `application.js`
 //= require attache
 ```
 
+#### Using its components alone
+
+If you prefer to skip automatic upgrading of `input[type=file]`, you can wield `attache_file_input.AttacheFileInput` yourself
+
+``` javascript
+// = require attache/file_input
+```
+
+Or use the lower level components
+
+``` javascript
+//= require attache/cors_upload
+//= require attache/bootstrap3
+
+attache_cors_upload.CORSUpload
+attache_bootstrap3.Bootstrap3FilePreview
+attache_bootstrap3.Bootstrap3Header
+attache_bootstrap3.Bootstrap3Placeholder
+```
+
+#### Customize UI
+
 If you want to customize the file upload look and feel, define your own React `<AttacheFilePreview/>`, `<AttacheHeader/>`, `<AttachePlaceholder/>` renderer *before* including the attache js. For example,
 
 ``` javascript
