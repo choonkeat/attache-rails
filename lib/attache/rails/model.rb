@@ -57,5 +57,3 @@ module Attache
     end
   end
 end
-
-ActiveRecord::Base.send(:include, Attache::Rails::Model)
