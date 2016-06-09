@@ -27,7 +27,7 @@ var upgradeFileInput = function () {
     wrap.className = 'enable-attache'
     wrap.dataset.attacheProps = JSON.stringify(attrs)
     ele.parentNode.replaceChild(wrap, ele)
-    ReactDOM.render(React.createElement(AttacheFileInput, React.__spread({}, attrs)), wrap)
+    ReactDOM.render(React.createElement(AttacheFileInput, $.extend({}, attrs)), wrap)
   }
 }
 
