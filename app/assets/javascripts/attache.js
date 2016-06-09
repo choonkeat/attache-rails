@@ -1,9 +1,18 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.attache = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.upgradeFileInput = undefined;
+
+var _bootstrap = require('./attache/bootstrap3');
+
 var _file_input = require('./attache/file_input');
 
-var upgradeFileInput = function upgradeFileInput() {
+var _cors_upload = require('./attache/cors_upload');
+
+var upgradeFileInput = exports.upgradeFileInput = function upgradeFileInput() {
   var safeWords = { 'class': 'className', 'for': 'htmlFor' };
   var sel = document.getElementsByClassName('enable-attache');
   var ele, attrs, name, value;
@@ -29,13 +38,17 @@ var upgradeFileInput = function upgradeFileInput() {
     ReactDOM.render(React.createElement(_file_input.AttacheFileInput, $.extend({}, attrs)), wrap);
   }
 }; /*global $*/
+/*global window*/
 /*global React*/
 /*global ReactDOM*/
 
+window.attache_cors_upload = { CORSUpload: _cors_upload.CORSUpload };
+window.attache_bootstrap3 = { Bootstrap3Header: _bootstrap.Bootstrap3Header, Bootstrap3FilePreview: _bootstrap.Bootstrap3FilePreview, Bootstrap3Placeholder: _bootstrap.Bootstrap3Placeholder };
+window.attache_file_input = { AttacheFileInput: _file_input.AttacheFileInput };
 $(document).on('page:change turbolinks:load', upgradeFileInput);
 $(upgradeFileInput);
 
-},{"./attache/file_input":4}],2:[function(require,module,exports){
+},{"./attache/bootstrap3":2,"./attache/cors_upload":3,"./attache/file_input":4}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -253,19 +266,17 @@ var CORSUpload = exports.CORSUpload = (function () {
 },{}],4:[function(require,module,exports){
 'use strict';
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /*global $*/
-/*global window*/
-/*global React*/
-/*global ReactDOM*/
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.AttacheFileInput = undefined;
-
-var _cors_upload = require('./cors_upload');
-
-var _bootstrap = require('./bootstrap3');
+/*global $*/
+/*global window*/
+/*global React*/
+/*global ReactDOM*/
+/*global attache_bootstrap3 */
+/*global attache_cors_upload */
 
 var AttacheFileInput = exports.AttacheFileInput = React.createClass({
   displayName: 'AttacheFileInput',
@@ -305,7 +316,7 @@ var AttacheFileInput = exports.AttacheFileInput = React.createClass({
     that.state.uploading = that.state.uploading + files.length;
     if (!that.state.submit_buttons) that.state.submit_buttons = $("button,input[type='submit']", $(file_element).parents('form')[0]).filter(':not(:disabled)');
 
-    var upload = new _cors_upload.CORSUpload({
+    var upload = new attache_cors_upload.CORSUpload({
       file_element: file_element,
       files: files,
       onProgress: this.setFileValue,
@@ -351,9 +362,9 @@ var AttacheFileInput = exports.AttacheFileInput = React.createClass({
   },
   render: function render() {
     var that = this;
-    var Header = window.AttacheHeader || _bootstrap.Bootstrap3Header;
-    var FilePreview = window.AttacheFilePreview || _bootstrap.Bootstrap3FilePreview;
-    var Placeholder = window.AttachePlaceholder || _bootstrap.Bootstrap3Placeholder;
+    var Header = window.AttacheHeader || attache_bootstrap3.Bootstrap3Header;
+    var FilePreview = window.AttacheFilePreview || attache_bootstrap3.Bootstrap3FilePreview;
+    var Placeholder = window.AttachePlaceholder || attache_bootstrap3.Bootstrap3Placeholder;
 
     if (that.state.uploading > 0) {
       that.state.submit_buttons.attr('disabled', true);
@@ -426,5 +437,5 @@ var AttacheFileInput = exports.AttacheFileInput = React.createClass({
   }
 });
 
-},{"./bootstrap3":2,"./cors_upload":3}]},{},[1])(1)
+},{}]},{},[1])(1)
 });

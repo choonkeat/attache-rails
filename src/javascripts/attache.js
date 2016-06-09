@@ -1,10 +1,13 @@
 /*global $*/
+/*global window*/
 /*global React*/
 /*global ReactDOM*/
 
+import { Bootstrap3Header, Bootstrap3FilePreview, Bootstrap3Placeholder } from './attache/bootstrap3'
 import { AttacheFileInput } from './attache/file_input'
+import { CORSUpload } from './attache/cors_upload'
 
-var upgradeFileInput = function () {
+export var upgradeFileInput = function () {
   var safeWords = { 'class': 'className', 'for': 'htmlFor' }
   var sel = document.getElementsByClassName('enable-attache')
   var ele, attrs, name, value
@@ -31,5 +34,8 @@ var upgradeFileInput = function () {
   }
 }
 
+window.attache_cors_upload = { CORSUpload }
+window.attache_bootstrap3 = { Bootstrap3Header, Bootstrap3FilePreview, Bootstrap3Placeholder }
+window.attache_file_input = { AttacheFileInput }
 $(document).on('page:change turbolinks:load', upgradeFileInput)
 $(upgradeFileInput)

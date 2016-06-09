@@ -2,9 +2,8 @@
 /*global window*/
 /*global React*/
 /*global ReactDOM*/
-
-import { CORSUpload } from './cors_upload'
-import { Bootstrap3Header, Bootstrap3FilePreview, Bootstrap3Placeholder } from './bootstrap3'
+/*global attache_bootstrap3 */
+/*global attache_cors_upload */
 
 export var AttacheFileInput = React.createClass({
   getInitialState () {
@@ -45,7 +44,7 @@ export var AttacheFileInput = React.createClass({
     that.state.uploading = that.state.uploading + files.length
     if (!that.state.submit_buttons) that.state.submit_buttons = $("button,input[type='submit']", $(file_element).parents('form')[0]).filter(':not(:disabled)')
 
-    var upload = new CORSUpload({
+    var upload = new attache_cors_upload.CORSUpload({
       file_element: file_element,
       files: files,
       onProgress: this.setFileValue,
@@ -97,9 +96,9 @@ export var AttacheFileInput = React.createClass({
 
   render () {
     var that = this
-    var Header = window.AttacheHeader || Bootstrap3Header
-    var FilePreview = window.AttacheFilePreview || Bootstrap3FilePreview
-    var Placeholder = window.AttachePlaceholder || Bootstrap3Placeholder
+    var Header = window.AttacheHeader || attache_bootstrap3.Bootstrap3Header
+    var FilePreview = window.AttacheFilePreview || attache_bootstrap3.Bootstrap3FilePreview
+    var Placeholder = window.AttachePlaceholder || attache_bootstrap3.Bootstrap3Placeholder
 
     if (that.state.uploading > 0) {
       that.state.submit_buttons.attr('disabled', true)

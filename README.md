@@ -33,17 +33,12 @@ Add the attache javascript to your `application.js`
 
 #### Using its components alone
 
-If you prefer to skip automatic upgrading of `input[type=file]`, you can wield `attache_file_input.AttacheFileInput` yourself
-
-``` javascript
-// = require attache/file_input
-```
-
-Or use the lower level components
+If you prefer to skip automatic upgrading of `input[type=file]`, you can wield the components yourself
 
 ``` javascript
 //= require attache/cors_upload
 //= require attache/bootstrap3
+//= require attache/file_input
 
 attache_cors_upload.CORSUpload
 attache_bootstrap3.Bootstrap3FilePreview
