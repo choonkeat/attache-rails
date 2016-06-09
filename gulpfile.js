@@ -38,7 +38,7 @@ gulp.task('js', ['lint'], function (done) {
 
   var tasks = files.map(function (entry) {
     var name = entry.substring(config.src.dir.length + 1)
-    return browserify({ entries: [entry], debug: true, standalone: name.replace(/\.\w+$/, '').replace(/\W+/g, '_') })
+    return browserify({ entries: [entry], standalone: name.replace(/\.\w+$/, '').replace(/\W+/g, '_') })
       .transform(babelify)
       .bundle()
       .on('error', function () {
