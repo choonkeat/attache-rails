@@ -15,7 +15,7 @@ export class CORSUpload {
   }
 
   // for overwriting
-  createLocalThumbnail () { }
+  onStart () { }
   onComplete (uid, json) { }
   onProgress (uid, json) { }
   onError (uid, status) { alert(status) }
@@ -36,7 +36,7 @@ export class CORSUpload {
     _results = []
     for (_i = 0, _len = this.files.length; _i < _len; _i++) {
       f = this.files[_i]
-      this.createLocalThumbnail(f) // if any
+      this.onStart(f) // if any
       f.uid = prefix + (counter++)
       this.onProgress(f.uid, { src: f.src, filename: f.name, percentLoaded: 0, bytesLoaded: 0, bytesTotal: f.size })
       _results.push(this.performUpload(f, url))

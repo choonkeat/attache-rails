@@ -179,8 +179,8 @@ var CORSUpload = exports.CORSUpload = (function () {
   // for overwriting
 
   _createClass(CORSUpload, [{
-    key: 'createLocalThumbnail',
-    value: function createLocalThumbnail() {}
+    key: 'onStart',
+    value: function onStart() {}
   }, {
     key: 'onComplete',
     value: function onComplete(uid, json) {}
@@ -206,7 +206,7 @@ var CORSUpload = exports.CORSUpload = (function () {
       _results = [];
       for (_i = 0, _len = this.files.length; _i < _len; _i++) {
         f = this.files[_i];
-        this.createLocalThumbnail(f); // if any
+        this.onStart(f); // if any
         f.uid = prefix + counter++;
         this.onProgress(f.uid, { src: f.src, filename: f.name, percentLoaded: 0, bytesLoaded: 0, bytesTotal: f.size });
         _results.push(this.performUpload(f, url));
