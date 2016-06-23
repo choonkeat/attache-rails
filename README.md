@@ -169,21 +169,6 @@ This opens up the possibility to query inside the column, e.g.
 User.where("photo ->> 'content_type' = ?", 'image/png')
 ```
 
-## Upgrading from v2
-
-`json` values in the database column has changed in v3. Previously, we are working with json *strings*, now we are working with json *objects*, aka `Hash`. i.e.
-
-- in previous version, `@user.photos` value could be something like `["{\"path\":\"dirname/file.jpg\"}"]`. Notice that it is an array of 1 `String`.
-- in v3, the value would be `[{"path"=>"dirname/file.jpg"}]`. Notice that it is an array of 1 `Hash`
-
-If you're upgrading from V2, we have a generator that will create a migration file to fixup the data
-
-```
-rails g attache:rails:upgrade_v2_to_v3
-```
-
-NOTE: It is highly recommended that developers verify the migration with a dump of the production data in a staging environment. Please take a look at the generated migration file.
-
 # License
 
 MIT
