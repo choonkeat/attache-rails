@@ -113,6 +113,7 @@ var AttacheFileInput = exports.AttacheFileInput = React.createClass({
       var copy = JSON.parse(JSON.stringify(result));
       delete copy.src;
       delete copy.filename;
+      delete copy.multiple;
       var json = JSON.stringify(copy);
       //
       result.multiple = that.props.multiple;

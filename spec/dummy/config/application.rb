@@ -2,7 +2,7 @@ require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
 
-ActiveRecord::Base.raise_in_transactional_callbacks = true
+ActiveRecord::Base.raise_in_transactional_callbacks = true unless Rails::VERSION::MAJOR >= 5
 Bundler.require(*Rails.groups)
 
 module Dummy
