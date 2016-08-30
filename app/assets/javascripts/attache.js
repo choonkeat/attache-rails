@@ -44,7 +44,7 @@ var upgradeFileInput = exports.upgradeFileInput = function upgradeFileInput() {
 
 window.attache_cors_upload = { CORSUpload: _cors_upload.CORSUpload };
 window.attache_bootstrap3 = { Bootstrap3Header: _bootstrap.Bootstrap3Header, Bootstrap3FilePreview: _bootstrap.Bootstrap3FilePreview, Bootstrap3Placeholder: _bootstrap.Bootstrap3Placeholder };
-window.attache_file_input = { AttacheFileInput: _file_input.AttacheFileInput };
+window.attache_file_input = { AttacheFileInput: _file_input.AttacheFileInput, upgradeFileInput: upgradeFileInput };
 $(document).on('page:change turbolinks:load', upgradeFileInput);
 $(upgradeFileInput);
 

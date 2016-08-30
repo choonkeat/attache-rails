@@ -36,6 +36,6 @@ export var upgradeFileInput = function () {
 
 window.attache_cors_upload = { CORSUpload }
 window.attache_bootstrap3 = { Bootstrap3Header, Bootstrap3FilePreview, Bootstrap3Placeholder }
-window.attache_file_input = { AttacheFileInput }
+window.attache_file_input = { AttacheFileInput, upgradeFileInput }
 $(document).on('page:change turbolinks:load', upgradeFileInput)
 $(upgradeFileInput)
