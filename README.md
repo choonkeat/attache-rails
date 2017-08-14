@@ -93,7 +93,7 @@ end
 In your form, you would add some options to `file_field` using the `attache_options` helper method:
 
 ``` slim
-= f.file_field :photos, f.object.avatar_options('64x64#')
+= f.file_field :photos, f.object.photos_options('64x64#')
 ```
 
 If you were using `has_many_attaches` the file input will automatically allow multiple files, otherwise the file input will only accept 1 file.
